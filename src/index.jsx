@@ -69,6 +69,15 @@ function App() {
       ],
       type: "jpg",
     },
+    meihaoshiwu: {
+      name: "美好事物",
+      url: [
+        "/strum/meihaoshiwu/1.jpg",
+        "/strum/meihaoshiwu/2.jpg",
+        "/strum/meihaoshiwu/3.jpg",
+      ],
+      type: "jpg",
+    },
   };
   return (
     <>
