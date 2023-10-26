@@ -53,7 +53,7 @@ export default function TemporaryDrawer(props) {
                 }}
               >
                 <ListItemIcon>{<InboxIcon />}</ListItemIcon>
-                <ListItemText primary={key} />
+                <ListItemText primary={value["name"]} />
               </ListItemButton>
             </ListItem>
           ))}
