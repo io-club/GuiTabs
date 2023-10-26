@@ -2,7 +2,6 @@ import { Route, Router, Routes } from "@solidjs/router";
 import { render } from "solid-js/web";
 import { Button } from "@suid/material";
 import TemporaryDrawer from "./tabs";
-
 import { createSignal } from "solid-js";
 
 function App() {
@@ -35,7 +34,6 @@ function App() {
         "/finger/time_travel/4.png",
         "/finger/time_travel/5.png",
         "/finger/time_travel/6.png",
-        "/finger/time_travel/7.png",
       ],
       type: "png",
     },
@@ -61,6 +59,15 @@ function App() {
       name: "花海 电吉他",
       url: ["/finger/huahai/1.png", "/finger/huahai/2.png"],
       type: "png",
+    },
+    april_encounter: {
+      name: "April Encounter",
+      url: [
+        "/strum/april_encounter/1.jpg",
+        "/strum/april_encounter/2.jpg",
+        "/strum/april_encounter/3.jpg",
+      ],
+      type: "jpg",
     },
   };
   return (
