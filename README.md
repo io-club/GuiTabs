@@ -1,3 +1,3 @@
-# GiuTabs
+# GuiTabs
 
 Guitar Tabs
