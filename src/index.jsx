@@ -26,11 +26,6 @@ function App() {
       ],
       type: "webp",
     },
-    huahai: {
-      name: "花海 电吉他",
-      url: ["/finger/huahai/1.png", "/finger/huahai/2.png"],
-      type: "png",
-    },
     time_travel: {
       name: "time travel",
       url: [
@@ -42,6 +37,29 @@ function App() {
         "/finger/time_travel/6.png",
         "/finger/time_travel/7.png",
       ],
+      type: "png",
+    },
+    fenyechen: {
+      name: "枫叶城",
+      url: [
+        "/finger/fenyechen/1.png",
+        "/finger/fenyechen/2.png",
+        "/finger/fenyechen/3.png",
+      ],
+      type: "png",
+    },
+    qijishan: {
+      name: "奇迹山",
+      url: [
+        "/finger/qijishan/1.webp",
+        "/finger/qijishan/2.webp",
+        "/finger/qijishan/3.webp",
+      ],
+      type: "webp",
+    },
+    huahai: {
+      name: "花海 电吉他",
+      url: ["/finger/huahai/1.png", "/finger/huahai/2.png"],
       type: "png",
     },
   };
@@ -98,7 +116,7 @@ function App() {
             }
           })
         ) : (
-          <img src="t.webp"></img>
+          <img src="index.webp"></img>
         )}
       </div>
     </>
