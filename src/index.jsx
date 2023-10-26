@@ -132,7 +132,13 @@ function App() {
             }
           })
         ) : (
-          <img src="index.webp"></img>
+          <img
+            src="index.png"
+            style={{
+              width: `300px`,
+              height: `300px`,
+            }}
+          ></img>
         )}
       </div>
     </>
