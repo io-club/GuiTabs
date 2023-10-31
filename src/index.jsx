@@ -78,6 +78,13 @@ function App() {
       ],
       type: "jpg",
     },
+    langbei: {
+      name: "狼狈",
+      url:[
+        "/strum/langbei/1.png",
+      ],
+      type: "png",
+    }
   };
   return (
     <>
