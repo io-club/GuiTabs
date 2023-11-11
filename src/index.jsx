@@ -83,6 +83,15 @@ function App() {
       ],
       type: "jpg",
     },
+    meihaoshiwu2017: {
+      name: "美好事物 2017",
+      url: [
+        "/strum/meihaoshiwu2017/1.png",
+        "/strum/meihaoshiwu2017/2.png",
+        "/strum/meihaoshiwu2017/3.png",
+      ],
+      type: "png",
+    },
     langbei: {
       name: "狼狈",
       url: ["/strum/langbei/1.png"],
