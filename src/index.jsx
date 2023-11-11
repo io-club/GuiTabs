@@ -25,6 +25,15 @@ function App() {
       ],
       type: "webp",
     },
+    fenyechen: {
+      name: "枫叶城",
+      url: [
+        "/finger/fenyechen/1.png",
+        "/finger/fenyechen/2.png",
+        "/finger/fenyechen/3.png",
+      ],
+      type: "png",
+    },
     time_travel: {
       name: "time travel",
       url: [
@@ -37,13 +46,9 @@ function App() {
       ],
       type: "png",
     },
-    fenyechen: {
-      name: "枫叶城",
-      url: [
-        "/finger/fenyechen/1.png",
-        "/finger/fenyechen/2.png",
-        "/finger/fenyechen/3.png",
-      ],
+    flower: {
+      name: "flower",
+      url: ["/finger/flower/1.png", "/finger/flower/2.png"],
       type: "png",
     },
     qijishan: {
@@ -80,11 +85,9 @@ function App() {
     },
     langbei: {
       name: "狼狈",
-      url:[
-        "/strum/langbei/1.png",
-      ],
+      url: ["/strum/langbei/1.png"],
       type: "png",
-    }
+    },
   };
   return (
     <>
