@@ -7,11 +7,11 @@ import {
   TextField,
 } from "@suid/material";
 import TemporaryDrawer from "./sidebar";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import { Tabs as tabsData } from "../../data";
 import { Tab, TheftDataEntry } from "../../types";
 import { useAtom } from "solid-jotai";
-import apiUrlAtom from "../../state";
+import apiUrlAtom, { defaultApiUrl } from "../../state";
 import { Thief } from "./thief";
 
 export default function App() {
@@ -32,6 +32,11 @@ export default function App() {
   const [internalURL, setInternalURL] = createSignal("");
 
   const [dataVersionKey, setDataVersionKey] = createSignal(0);
+
+  // init if null
+  createEffect(() => {
+    if (typeof apiURL() !== "string") setAPIURL(defaultApiUrl);
+  });
 
   const mapTabs = (content: Tabs) => {
     if (content.type === "preset") {
@@ -120,8 +125,8 @@ export default function App() {
           >
             <Thief
               onSubmit={() => {
-                setStealDialogOpen(false)
-                setDataVersionKey(dataVersionKey() + 1)
+                setStealDialogOpen(false);
+                setDataVersionKey(dataVersionKey() + 1);
               }}
               close={() => setStealDialogOpen(false)}
             />
