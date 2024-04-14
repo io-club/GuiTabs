@@ -32,10 +32,12 @@ export function Thief(props: FormProps) {
     mode: 3,
     skip: 0,
   });
+  const [lock, setLock] = createSignal(false);
 
   const apiURL = useAtom(apiUrlAtom)[0];
 
   const handleSubmit = () => {
+    setLock(true);
     fetch(apiURL(), {
       method: "POST",
       body: JSON.stringify(values()),
@@ -43,7 +45,6 @@ export function Thief(props: FormProps) {
         "Content-Type": "application/json",
       },
     })
-      .then((response) => response.json())
       .then(() => {
         props.onSubmit();
         if (window) {
@@ -52,6 +53,7 @@ export function Thief(props: FormProps) {
       })
       .catch((error) => {
         console.error("Error:", error);
+        setLock(false);
       });
   };
 
@@ -94,6 +96,7 @@ export function Thief(props: FormProps) {
             label="跳过帧数"
             type="number"
             value={values().skip}
+            defaultValue={0}
             onChange={(e) =>
               setValues({ ...values(), skip: parseInt(e.target.value) })
             }
@@ -102,7 +105,7 @@ export function Thief(props: FormProps) {
       </DialogContent>
       <DialogActions>
         <Button onClick={props.close}>取消</Button>
-        <Button onClick={() => handleSubmit()}>提交</Button>
+        <Button disabled={lock()} onClick={() => handleSubmit()}>提交</Button>
       </DialogActions>
     </>
   );
