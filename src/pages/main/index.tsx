@@ -16,7 +16,7 @@ import {
   styled,
 } from "@suid/material";
 import TemporaryDrawer, { DrawerHeader } from "./sidebar";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, onCleanup } from "solid-js";
 import { Tabs as tabsData } from "../../data";
 import { Tab, TheftDataEntry } from "../../types";
 import { useAtom } from "solid-jotai";
@@ -25,7 +25,8 @@ import MuiAppBar, {
   AppBarProps as MuiAppBarProps,
 } from "@suid/material/AppBar";
 import { Thief } from "./thief";
-import { InfoOutlined, MenuRounded } from "@suid/icons-material";
+import { InfoOutlined, MenuRounded, Opacity } from "@suid/icons-material";
+import { ThemeOptions } from "@suid/material/styles/createTheme";
 
 export default function App() {
   type Tabs =
@@ -43,12 +44,32 @@ export default function App() {
   const [stealDialogOpen, setStealDialogOpen] = createSignal(false);
   const [apiURL, setAPIURL] = useAtom(apiUrlAtom);
   const [internalURL, setInternalURL] = createSignal("");
+  const [smallSize, setSmallSize] = createSignal(window.innerWidth < 520);
 
   const [dataVersionKey, setDataVersionKey] = createSignal(0);
 
   // init if null
   createEffect(() => {
     if (typeof apiURL() !== "string") setAPIURL(defaultApiUrl);
+  });
+
+  // show the drawer if tabs is empty
+  createEffect(() => {
+    if (!tabs()) {
+      setOpen(true);
+    }
+  });
+
+  createEffect(() => {
+    const handleResize = () => {
+      setSmallSize(window.innerWidth < 520);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    onCleanup(() => {
+      window.removeEventListener("resize", handleResize);
+    });
   });
 
   const drawerWidth = 240;
@@ -61,12 +82,6 @@ export default function App() {
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: `-${drawerWidth}px`,
-    ...{
-      transition: theme.transitions.create("margin", {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    },
   }));
 
   interface AppBarProps extends MuiAppBarProps {
@@ -81,12 +96,8 @@ export default function App() {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
-      ...{
-        transition: theme.transitions.create(["margin", "width"], {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-      },
+      boxShadow: "none",
+      borderBottom: `1px solid ${theme.palette.divider}`,
     })
   );
 
@@ -155,146 +166,154 @@ export default function App() {
   };
 
   return (
-    <ThemeProvider theme={createTheme()}>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar
-          // position="fixed"
-          position="absolute"
-          style={
-            open() && {
-              width: `calc(100% - ${drawerWidth}px)`,
-              "margin-left": `${drawerWidth}px`,
-            }
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar
+        position="absolute"
+        style={
+          open() &&
+          !smallSize() && {
+            width: `calc(100% - ${drawerWidth}px)`,
+            "margin-left": `${drawerWidth}px`,
           }
-        >
-          <Toolbar>
-            {!open() && (
-              <IconButton
-                size="small"
-                onClick={() => {
-                  setOpen(true);
+        }
+      >
+        <Toolbar>
+          <IconButton
+            size="small"
+            onClick={() => {
+              setOpen(true);
+            }}
+            sx={{
+              transition: "355ms cubic-bezier(0, 0, 0.2, 1) 225ms",
+              transform: `translateX(${!open() ? "0" : "-2em"})`,
+              opacity: !open() ? 1 : 0,
+              cursor: !open() ? "pointer" : "default",
+            }}
+          >
+            <MenuRounded />
+          </IconButton>
+          <span
+            style={{
+              "text-align": "right",
+              "text-decoration": "overline",
+              "font-weight": "bold",
+              display: "inline-block",
+              transition: "transform 355ms cubic-bezier(0, 0, 0.2, 1) 225ms",
+              transform: `translateY(0.1em) translateX(${
+                !open() ? "0" : "-2em"
+              })`,
+              margin: "0 10px",
+            }}
+          >
+            {tabs()?.data?.name ?? "GuiTabs"}
+          </span>
+          {
+            <Dialog
+              open={stealDialogOpen()}
+              fullWidth
+              onClose={() => setStealDialogOpen(false)}
+            >
+              <Thief
+                onSubmit={() => {
+                  setStealDialogOpen(false);
+                  setDataVersionKey(dataVersionKey() + 1);
                 }}
-              >
-                <MenuRounded />
-              </IconButton>
-            )}
-            <span
-              style={{
-                "text-align": "right",
-                "text-decoration": "overline",
-                "font-weight": "bold",
-                display: "inline-block",
-                transform: "translateY(0.1em)",
-                margin: "0 10px",
-              }}
+                close={() => setStealDialogOpen(false)}
+              />
+            </Dialog>
+          }
+          {
+            <Dialog
+              open={apiDialogOpen()}
+              fullWidth
+              onClose={() => setApiDialogOpen(false)}
             >
-              {tabs()?.data?.name ?? "GuiTabs"}
-            </span>
-            {
-              <Dialog
-                open={stealDialogOpen()}
-                fullWidth
-                onClose={() => setStealDialogOpen(false)}
-              >
-                <Thief
-                  onSubmit={() => {
-                    setStealDialogOpen(false);
-                    setDataVersionKey(dataVersionKey() + 1);
+              <DialogTitle>设置 API URL</DialogTitle>
+              <DialogContent>
+                <TextField
+                  label="API URL"
+                  value={internalURL()}
+                  onChange={(e) => setInternalURL(e.target.value)}
+                  fullWidth
+                  style={{
+                    "margin-top": "0.5em",
                   }}
-                  close={() => setStealDialogOpen(false)}
                 />
-              </Dialog>
-            }
-            {
-              <Dialog
-                open={apiDialogOpen()}
-                fullWidth
-                onClose={() => setApiDialogOpen(false)}
-              >
-                <DialogTitle>设置 API URL</DialogTitle>
-                <DialogContent>
-                  <TextField
-                    label="API URL"
-                    value={internalURL()}
-                    onChange={(e) => setInternalURL(e.target.value)}
-                    fullWidth
-                    style={{
-                      "margin-top": "0.5em",
-                    }}
-                  />
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => setApiDialogOpen(false)}>取消</Button>
-                  <Button
-                    onClick={() => {
-                      setAPIURL(internalURL());
-                      setApiDialogOpen(false);
-                    }}
-                  >
-                    保存
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            }
-            {tabs() && metaButton(tabs())}
-            <div style={{ "flex-grow": 1 }}></div>
-            <Button
-              variant="text"
-              size="small"
-              onClick={() => {
-                setStealDialogOpen(true);
-              }}
-            >
-              Steal
-            </Button>
-            <Button
-              variant="text"
-              size="small"
-              onClick={() => {
-                setInternalURL(apiURL());
-                setApiDialogOpen(true);
-              }}
-            >
-              API
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <Main
-          style={{
-            display: "flex",
-            "flex-direction": "column",
-            "align-items": "center",
-            "justify-content": "center",
-            "margin-left": (open() ? drawerWidth : 0).toString() + "px",
-          }}
-        >
-          <DrawerHeader />
-          {tabs() ? (
-            mapTabs(tabs())
-          ) : (
-            <img
-              src="index.png"
-              style={{
-                width: `300px`,
-                height: `300px`,
-              }}
-            ></img>
-          )}
-        </Main>
-        <TemporaryDrawer
-          key={dataVersionKey()}
-          tabs={tabsData}
-          open={open()}
-          onTabSelect={(title) => {
-            setTabs({ type: "preset", data: tabsData[title] });
-          }}
-          onTheftData={(data) => {
-            setTabs({ type: "theft", data: data });
-          }}
-          setOpen={setOpen}
-        />
-      </Box>
-    </ThemeProvider>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setApiDialogOpen(false)}>取消</Button>
+                <Button
+                  onClick={() => {
+                    setAPIURL(internalURL());
+                    setApiDialogOpen(false);
+                  }}
+                >
+                  保存
+                </Button>
+              </DialogActions>
+            </Dialog>
+          }
+          {tabs() && metaButton(tabs())}
+          <div style={{ "flex-grow": 1 }}></div>
+          <Button
+            variant="text"
+            size="small"
+            onClick={() => {
+              setOpen(false);
+              setStealDialogOpen(true);
+            }}
+          >
+            Steal
+          </Button>
+          <Button
+            variant="text"
+            size="small"
+            onClick={() => {
+              setOpen(false);
+              setInternalURL(apiURL());
+              setApiDialogOpen(true);
+            }}
+          >
+            API
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Main
+        style={{
+          display: "flex",
+          "flex-direction": "column",
+          "align-items": "center",
+          "justify-content": "center",
+          "margin-left":
+            (open() && !smallSize() ? drawerWidth : 0).toString() + "px",
+        }}
+      >
+        <DrawerHeader />
+        {tabs() ? (
+          mapTabs(tabs())
+        ) : (
+          <img
+            src="index.png"
+            style={{
+              width: `300px`,
+              height: `300px`,
+            }}
+          ></img>
+        )}
+      </Main>
+      <TemporaryDrawer
+        key={dataVersionKey()}
+        tabs={tabsData}
+        open={open()}
+        onTabSelect={(title) => {
+          setTabs({ type: "preset", data: tabsData[title] });
+        }}
+        onTheftData={(data) => {
+          setTabs({ type: "theft", data: data });
+        }}
+        setOpen={setOpen}
+      />
+    </Box>
   );
 }

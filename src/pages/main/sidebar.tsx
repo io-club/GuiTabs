@@ -16,7 +16,7 @@ import {
 } from "@suid/material";
 import { DrawerProps } from "@suid/material/Drawer";
 import { ListItemTab, TabMap, TheftData, TheftDataEntry } from "../../types";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom from "../../state";
 import { ChevronLeftRounded } from "@suid/icons-material";
@@ -60,7 +60,20 @@ export default function TemporaryDrawer(props: {
 
   const [theftData, setTheftData] = createSignal<TheftData>([]);
   const [theftEnabled, setTheftEnabled] = createSignal(true);
+  const [smallSize, setSmallSize] = createSignal(window.innerWidth < 520);
   const apiURL = useAtom(apiUrlAtom)[0];
+
+  createEffect(() => {
+    const handleResize = () => {
+      setSmallSize(window.innerWidth < 520);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    onCleanup(() => {
+      window.removeEventListener("resize", handleResize);
+    });
+  });
 
   createEffect(async () => {
     const response = await fetch(apiURL() + "/list");
@@ -131,7 +144,7 @@ export default function TemporaryDrawer(props: {
             <ListItemButton
               onClick={() => {
                 props.onTabSelect(tab.key);
-                // props.setOpen(false);
+                smallSize() && props.setOpen(false);
               }}
             >
               <ListItemIcon>{<InboxIcon />}</ListItemIcon>
@@ -145,7 +158,7 @@ export default function TemporaryDrawer(props: {
               <ListItemButton
                 onClick={() => {
                   props.onTheftData(data);
-                  // props.setOpen(false);
+                  smallSize() && props.setOpen(false);
                 }}
               >
                 <ListItemIcon>{<InboxIcon />}</ListItemIcon>
@@ -164,7 +177,7 @@ export default function TemporaryDrawer(props: {
           props.setOpen(false);
         },
       }}
-      variant="persistent"
+      variant={!smallSize() ? "persistent" : "temporary"}
       anchor={anchor}
       open={open()}
       sx={{ zIndex: 9999 }}
