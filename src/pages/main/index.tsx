@@ -35,8 +35,8 @@ export default function App() {
 
   const mapTabs = (content: Tabs) => {
     if (content.type === "preset") {
-      return tabsData[content.data.name].url.map((e, index) => {
-        switch (tabsData[content.data.name].type) {
+      return content.data.url.map((e, index) => {
+        switch (content.data.type) {
           case "pdf":
             return <a>pdf gun !</a>;
           default:
