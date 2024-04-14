@@ -64,7 +64,7 @@ export default function App() {
               第 {index + 1} 页，共 {content.data.pages} 页 👇
             </p>
             <img
-              src={`${apiURL()}/${content.data.href}/${e}`}
+              src={`${apiURL()}${content.data.href}/${e}`}
               style={{
                 width: `auto`,
                 height: `auto`,
@@ -170,7 +170,7 @@ export default function App() {
           variant="text"
           size="small"
           onClick={() => {
-            setInternalURL(apiURL ?? "http://localhost:8000");
+            setInternalURL(apiURL());
             setApiDialogOpen(true);
           }}
           style={{

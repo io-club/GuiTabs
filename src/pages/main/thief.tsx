@@ -46,6 +46,9 @@ export function Thief(props: FormProps) {
       .then((response) => response.json())
       .then(() => {
         props.onSubmit();
+        if (window) {
+          window.location.reload();
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
