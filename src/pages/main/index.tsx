@@ -95,13 +95,11 @@ export default function App() {
     }
     return (
       <IconButton
-        size="small"
         onClick={() => {
           window.open(meta.url, "_blank");
         }}
         style={{
-          float: "right",
-          "margin-right": "10px",
+          "margin-left": "10px",
         }}
       >
         <InfoOutlined />
@@ -190,16 +188,18 @@ export default function App() {
           </Dialog>
         }
 
-        <a
+        <span
           style={{
             "text-align": "right",
             "text-decoration": "overline",
             "font-weight": "bold",
+            "display": "inline-block",
+            "transform": "translateY(0.1em)",
             "margin-left": "10px",
           }}
         >
           {tabs()?.data?.name ?? "GuiTabs"}
-        </a>
+        </span>
         {tabs() && metaButton(tabs())}
         <Button
           variant="text"
