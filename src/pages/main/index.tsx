@@ -44,7 +44,9 @@ export default function App() {
   // show the drawer if tabs is empty
   createEffect(() => {
     if (!tabs()) {
-      setOpen(true);
+      setTimeout(() => {
+        setOpen(true);
+      }, 225);
     }
   });
 
