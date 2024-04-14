@@ -119,7 +119,10 @@ export default function App() {
             onClose={() => setStealDialogOpen(false)}
           >
             <Thief
-              onSubmit={() => setStealDialogOpen(false)}
+              onSubmit={() => {
+                setStealDialogOpen(false)
+                setDataVersionKey(dataVersionKey() + 1)
+              }}
               close={() => setStealDialogOpen(false)}
             />
           </Dialog>
