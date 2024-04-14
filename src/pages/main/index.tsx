@@ -4,6 +4,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   TextField,
 } from "@suid/material";
 import TemporaryDrawer from "./sidebar";
@@ -13,6 +14,7 @@ import { Tab, TheftDataEntry } from "../../types";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom, { defaultApiUrl } from "../../state";
 import { Thief } from "./thief";
+import { InfoOutlined } from "@suid/icons-material";
 
 export default function App() {
   type Tabs =
@@ -81,6 +83,30 @@ export default function App() {
         );
       });
     }
+  };
+
+  const metaButton = (tab: Tabs) => {
+    if (tab.type !== "theft") {
+      return;
+    }
+    const meta = tab.data.meta;
+    if (!meta) {
+      return;
+    }
+    return (
+      <IconButton
+        size="small"
+        onClick={() => {
+          window.open(meta.url, "_blank");
+        }}
+        style={{
+          float: "right",
+          "margin-right": "10px",
+        }}
+      >
+        <InfoOutlined />
+      </IconButton>
+    );
   };
 
   return (
@@ -174,6 +200,7 @@ export default function App() {
         >
           {tabs()?.data?.name ?? "GuiTabs"}
         </a>
+        {tabs() && metaButton(tabs())}
         <Button
           variant="text"
           size="small"
@@ -186,7 +213,7 @@ export default function App() {
             "margin-right": "10px",
           }}
         >
-          Theft API
+          API
         </Button>
       </div>
       <div

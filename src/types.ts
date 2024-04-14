@@ -21,10 +21,19 @@ export interface ListItemTab extends _Tab {
     selected: boolean;
 };
 
+export type TheftMeta = {
+    url: string;
+    name?: string;
+    mode?: number;
+    skip?: number;
+    addTime?: string;
+};
+
 export type TheftDataEntry = {
     name: string;
     href: string;
     pages: number;
     content: string[];
+    meta?: TheftMeta;
 };
 export type TheftData = TheftDataEntry[];
