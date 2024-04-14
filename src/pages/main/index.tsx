@@ -10,35 +10,23 @@ import {
   IconButton,
   TextField,
   Theme,
-  ThemeProvider,
   Toolbar,
-  createTheme,
   styled,
 } from "@suid/material";
 import TemporaryDrawer, { DrawerHeader } from "./sidebar";
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { Tabs as tabsData } from "../../data";
-import { Tab, TheftDataEntry } from "../../types";
+import { UnionTabs } from "../../types";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom, { defaultApiUrl } from "../../state";
 import MuiAppBar, {
   AppBarProps as MuiAppBarProps,
 } from "@suid/material/AppBar";
 import { Thief } from "./thief";
-import { InfoOutlined, MenuRounded, Opacity } from "@suid/icons-material";
-import { ThemeOptions } from "@suid/material/styles/createTheme";
+import { InfoOutlined, MenuRounded } from "@suid/icons-material";
 
 export default function App() {
-  type Tabs =
-    | {
-        type: "preset";
-        data: Tab;
-      }
-    | {
-        type: "theft";
-        data: TheftDataEntry;
-      };
-  const [tabs, setTabs] = createSignal<Tabs>();
+  const [tabs, setTabs] = createSignal<UnionTabs>();
   const [open, setOpen] = createSignal(false);
   const [apiDialogOpen, setApiDialogOpen] = createSignal(false);
   const [stealDialogOpen, setStealDialogOpen] = createSignal(false);
@@ -101,7 +89,7 @@ export default function App() {
     })
   );
 
-  const mapTabs = (content: Tabs) => {
+  const mapTabs = (content: UnionTabs) => {
     if (content.type === "preset") {
       return content.data.url.map((e, index) => {
         switch (content.data.type) {
@@ -146,7 +134,7 @@ export default function App() {
     }
   };
 
-  const metaButton = (tab: Tabs) => {
+  const metaButton = (tab: UnionTabs) => {
     if (tab.type !== "theft") {
       return;
     }
@@ -193,21 +181,27 @@ export default function App() {
           >
             <MenuRounded />
           </IconButton>
-          <span
+          <div
             style={{
-              "text-align": "right",
-              "text-decoration": "overline",
-              "font-weight": "bold",
-              display: "inline-block",
               transition: "transform 355ms cubic-bezier(0, 0, 0.2, 1) 225ms",
-              transform: `translateY(0.1em) translateX(${
-                !open() ? "0" : "-2em"
-              })`,
-              margin: "0 10px",
+              transform: `translateX(${!open() ? "0" : "-2em"})`,
             }}
           >
-            {tabs()?.data?.name ?? "GuiTabs"}
-          </span>
+            <span
+              style={{
+                "text-align": "right",
+                "text-decoration": "overline",
+                "font-weight": "bold",
+                transform: "translateY(0.1em)",
+                display: "inline-block",
+                margin: "0 10px",
+              }}
+            >
+              {tabs()?.data?.name ?? "GuiTabs"}
+            </span>
+            {tabs() && metaButton(tabs())}
+          </div>
+
           {
             <Dialog
               open={stealDialogOpen()}
@@ -254,7 +248,6 @@ export default function App() {
               </DialogActions>
             </Dialog>
           }
-          {tabs() && metaButton(tabs())}
           <div style={{ "flex-grow": 1 }}></div>
           <Button
             variant="text"

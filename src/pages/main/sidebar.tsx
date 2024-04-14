@@ -15,7 +15,13 @@ import {
   styled,
 } from "@suid/material";
 import { DrawerProps } from "@suid/material/Drawer";
-import { ListItemTab, TabMap, TheftData, TheftDataEntry } from "../../types";
+import {
+  ListItemTab,
+  TabMap,
+  TheftData,
+  TheftDataEntry,
+  UnionTabs,
+} from "../../types";
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom from "../../state";
@@ -60,6 +66,7 @@ export default function TemporaryDrawer(props: {
 
   const [theftData, setTheftData] = createSignal<TheftData>([]);
   const [theftEnabled, setTheftEnabled] = createSignal(true);
+  const [selectedTab, setSelectedTab] = createSignal<UnionTabs>();
   const [smallSize, setSmallSize] = createSignal(window.innerWidth < 520);
   const apiURL = useAtom(apiUrlAtom)[0];
 
@@ -142,7 +149,13 @@ export default function TemporaryDrawer(props: {
         {filteredTabs().map((tab) => (
           <ListItem disablePadding>
             <ListItemButton
+              selected={
+                selectedTab() &&
+                selectedTab().type === "preset" &&
+                selectedTab().data === tab
+              }
               onClick={() => {
+                setSelectedTab({ type: "preset", data: tab });
                 props.onTabSelect(tab.key);
                 smallSize() && props.setOpen(false);
               }}
@@ -156,7 +169,13 @@ export default function TemporaryDrawer(props: {
           theftData().map((data) => (
             <ListItem disablePadding>
               <ListItemButton
+                selected={
+                  selectedTab() &&
+                  selectedTab().type === "theft" &&
+                  selectedTab().data === data
+                }
                 onClick={() => {
+                  setSelectedTab({ type: "theft", data: data });
                   props.onTheftData(data);
                   smallSize() && props.setOpen(false);
                 }}
