@@ -3,7 +3,7 @@ import { atomWithStorage } from "jotai/vanilla/utils";
 // Create a persistent atom with initial value in localStorage
 const apiUrlAtom = atomWithStorage(
   "apiUrl",
-  "http://localhost:8000",
+  "https://c.rcex.live:37898",
   localStorage,
   { getOnInit: true }
 );
