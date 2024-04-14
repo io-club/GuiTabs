@@ -20,3 +20,11 @@ export interface ListItemTab extends _Tab {
     tags: string[]
     selected: boolean;
 };
+
+export type TheftDataEntry = {
+    name: string;
+    href: string;
+    pages: number;
+    content: string[];
+};
+export type TheftData = TheftDataEntry[];
