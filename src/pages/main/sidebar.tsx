@@ -7,11 +7,14 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
+  Link,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Typography,
+  createTheme,
   styled,
 } from "@suid/material";
 import { DrawerProps } from "@suid/material/Drawer";
@@ -106,44 +109,6 @@ export default function TemporaryDrawer(props: {
       sx={{ width: anchor === "top" || anchor === "bottom" ? "auto" : 250 }}
       role="presentation"
     >
-      <Box>
-        {/* tags */}
-        <FormGroup sx={{ p: 3 }}>
-          {allTags.map((v) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  onChange={(e, checked) => {
-                    if (checked) {
-                      setSelectedTags([v, ...selectedTags()]);
-                    } else {
-                      const currenTags = selectedTags();
-                      currenTags.splice(currenTags.indexOf(v), 1);
-                      setSelectedTags([...currenTags]);
-                    }
-                  }}
-                  checked={selectedTags().includes(v)}
-                />
-              }
-              label={v}
-            />
-          ))}
-          <FormControlLabel
-            control={
-              <Checkbox
-                size="small"
-                onChange={(e, checked) => {
-                  setTheftEnabled(checked);
-                }}
-                checked={theftEnabled()}
-              />
-            }
-            label="theft"
-          />
-        </FormGroup>
-      </Box>
-      <Divider />
       <List>
         {/* tab list */}
         {filteredTabs().map((tab) => (
@@ -186,6 +151,22 @@ export default function TemporaryDrawer(props: {
             </ListItem>
           ))}
       </List>
+      <Typography
+        variant="caption"
+        sx={{ display: "block", width: "100%", textAlign: "center", py: 2 }}
+      >
+        <p>Made with 😈 by IO Club</p>
+        <p>
+          Github:{" "}
+          <Link href="https://github.com/io-club/GuiTabs" target="_blank">
+            GuiTabs
+          </Link>
+          &nbsp;
+          <Link href="https://github.com/io-club/GuiTabsThief" target="_blank">
+            GuiTabsThief
+          </Link>
+        </p>
+      </Typography>
     </Box>
   );
   const anchor: Anchor = "left";
@@ -201,17 +182,60 @@ export default function TemporaryDrawer(props: {
       open={open()}
       sx={{ zIndex: 9999 }}
     >
-      <DrawerHeader>
-        <IconButton
-          size="small"
-          onClick={() => {
-            props.setOpen(false);
-          }}
-        >
-          <ChevronLeftRounded />
-        </IconButton>
-      </DrawerHeader>
-      <Divider />
+      <Box
+        backgroundColor={createTheme().palette.background.paper}
+        style={{ position: "sticky", top: 0, "z-index": 9999 }}
+      >
+        <DrawerHeader>
+          <IconButton
+            size="small"
+            onClick={() => {
+              props.setOpen(false);
+            }}
+          >
+            <ChevronLeftRounded />
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <Box>
+          {/* tags */}
+          <FormGroup sx={{ p: 3 }}>
+            {allTags.map((v) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="small"
+                    onChange={(e, checked) => {
+                      if (checked) {
+                        setSelectedTags([v, ...selectedTags()]);
+                      } else {
+                        const currenTags = selectedTags();
+                        currenTags.splice(currenTags.indexOf(v), 1);
+                        setSelectedTags([...currenTags]);
+                      }
+                    }}
+                    checked={selectedTags().includes(v)}
+                  />
+                }
+                label={v}
+              />
+            ))}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  onChange={(e, checked) => {
+                    setTheftEnabled(checked);
+                  }}
+                  checked={theftEnabled()}
+                />
+              }
+              label="theft"
+            />
+          </FormGroup>
+        </Box>
+        <Divider />
+      </Box>
       {list(anchor)}
     </Drawer>
   );

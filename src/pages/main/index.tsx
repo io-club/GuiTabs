@@ -8,13 +8,17 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Menu,
   TextField,
   Theme,
   Toolbar,
   styled,
 } from "@suid/material";
 import TemporaryDrawer, { DrawerHeader } from "./sidebar";
-import { createEffect, createSignal, onCleanup } from "solid-js";
+import { createEffect, createSignal, on, onCleanup } from "solid-js";
 import { Tabs as tabsData } from "../../data";
 import { UnionTabs } from "../../types";
 import { useAtom } from "solid-jotai";
@@ -23,12 +27,20 @@ import MuiAppBar, {
   AppBarProps as MuiAppBarProps,
 } from "@suid/material/AppBar";
 import { Thief } from "./thief";
-import { InfoOutlined, MenuRounded } from "@suid/icons-material";
+import {
+  InfoOutlined,
+  MenuRounded,
+  SmartDisplayRounded,
+} from "@suid/icons-material";
 
 export default function App() {
   const [tabs, setTabs] = createSignal<UnionTabs>();
   const [open, setOpen] = createSignal(false);
   const [apiDialogOpen, setApiDialogOpen] = createSignal(false);
+  const [infoOpen, setInfoOpen] = createSignal(false);
+  const [infoAnchorEl, setInfoAnchorEl] = createSignal<HTMLElement | null>(
+    null
+  );
   const [stealDialogOpen, setStealDialogOpen] = createSignal(false);
   const [apiURL, setAPIURL] = useAtom(apiUrlAtom);
   const [internalURL, setInternalURL] = createSignal("");
@@ -145,13 +157,39 @@ export default function App() {
       return;
     }
     return (
-      <IconButton
-        onClick={() => {
-          window.open(meta.url, "_blank");
-        }}
-      >
-        <InfoOutlined />
-      </IconButton>
+      <>
+        <IconButton onClick={() => window.open(meta.url, "_blank")}>
+          <SmartDisplayRounded />
+        </IconButton>
+        {meta.name && (
+          <>
+            <IconButton
+              onClick={(event) => {
+                setInfoAnchorEl(event.target as HTMLElement);
+                setInfoOpen(!infoOpen());
+              }}
+            >
+              <InfoOutlined />
+            </IconButton>
+            <Menu
+              open={infoOpen() && infoAnchorEl() !== null}
+              anchorEl={infoAnchorEl()}
+              onClose={() => {
+                setInfoOpen(false);
+                setInfoAnchorEl(null);
+              }}
+            >
+              <List dense disablePadding subheader={<ListItem>参数</ListItem>}>
+                {Object.entries(meta).map(([key, value]) => (
+                  <ListItem>
+                    <ListItemText primary={key} secondary={value} />
+                  </ListItem>
+                ))}
+              </List>
+            </Menu>
+          </>
+        )}
+      </>
     );
   };
 
@@ -302,9 +340,13 @@ export default function App() {
         tabs={tabsData}
         open={open()}
         onTabSelect={(title) => {
+          setInfoOpen(false);
+          setInfoAnchorEl(null);
           setTabs({ type: "preset", data: tabsData[title] });
         }}
         onTheftData={(data) => {
+          setInfoOpen(false);
+          setInfoAnchorEl(null);
           setTabs({ type: "theft", data: data });
         }}
         setOpen={setOpen}
