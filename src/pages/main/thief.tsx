@@ -136,6 +136,7 @@ export function Thief(props: FormProps) {
                   setSimilarityNotValid(true);
                   return;
                 }
+                setSimilarityNotValid(false);
                 setValues({
                   ...values(),
                   similarity: n,
