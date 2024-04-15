@@ -2,6 +2,7 @@ import {
   Box,
   Breakpoint,
   Button,
+  ButtonBase,
   CssBaseline,
   Dialog,
   DialogActions,
@@ -158,9 +159,6 @@ export default function App() {
     }
     return (
       <>
-        <IconButton onClick={() => window.open(meta.url, "_blank")}>
-          <SmartDisplayRounded />
-        </IconButton>
         {meta.name && (
           <>
             <IconButton
@@ -189,6 +187,11 @@ export default function App() {
             </Menu>
           </>
         )}
+        <a href={meta.url} target="_blank">
+          <IconButton color="primary">
+            <SmartDisplayRounded />
+          </IconButton>
+        </a>
       </>
     );
   };
