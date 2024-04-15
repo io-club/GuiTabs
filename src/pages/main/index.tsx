@@ -181,7 +181,12 @@ export default function App() {
               <List dense disablePadding subheader={<ListItem>参数</ListItem>}>
                 {Object.entries(meta).map(([key, value]) => (
                   <ListItem>
-                    <ListItemText primary={key} secondary={value} />
+                    <ListItemText
+                      primary={key}
+                      secondary={
+                        typeof value === "string" ? value : value.toString()
+                      }
+                    />
                   </ListItem>
                 ))}
               </List>
@@ -254,7 +259,7 @@ export default function App() {
             >
               <Thief
                 onSubmit={() => {
-                  setStealDialogOpen(false);
+                  // setStealDialogOpen(false);
                   setDataVersionKey(dataVersionKey() + 1);
                 }}
                 close={() => setStealDialogOpen(false)}

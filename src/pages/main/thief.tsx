@@ -11,6 +11,8 @@ import {
   InputLabel,
   FormControlLabel,
   Checkbox,
+  CircularProgress,
+  Alert,
 } from "@suid/material";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom from "../../state";
@@ -20,6 +22,8 @@ interface FormValues {
   name: string;
   mode: number;
   skip: number;
+  invert: boolean;
+  similarity: number;
 }
 
 interface FormProps {
@@ -33,8 +37,12 @@ export function Thief(props: FormProps) {
     name: "",
     mode: 3,
     skip: 0,
+    invert: false,
+    similarity: 0.85,
   });
   const [lock, setLock] = createSignal(false);
+  const [error, setError] = createSignal<string | null>(null);
+  const [done, setDone] = createSignal(false);
 
   const apiURL = useAtom(apiUrlAtom)[0];
 
@@ -47,11 +55,12 @@ export function Thief(props: FormProps) {
         "Content-Type": "application/json",
       },
     })
-      .then(() => {
-        props.onSubmit();
-        if (window) {
-          window.location.reload();
+      .then((res) => {
+        if (res.status !== 200) {
+          setError("拉了");
         }
+        setDone(true);
+        props.onSubmit();
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -65,6 +74,23 @@ export function Thief(props: FormProps) {
       <DialogContent
         style={{ "flex-direction": "column", display: "flex", gap: "1rem" }}
       >
+        {error() !== null && <Alert severity="error">{error()}</Alert>}
+        {done() && (
+          <Alert
+            severity="success"
+            action={
+              <Button
+                onClick={() => {
+                  window.location.reload();
+                }}
+              >
+                刷新
+              </Button>
+            }
+          >
+            好了
+          </Alert>
+        )}
         <FormControl style={{ "margin-top": "0.5em" }}>
           <TextField
             label="URL"
@@ -137,7 +163,11 @@ export function Thief(props: FormProps) {
       </DialogContent>
       <DialogActions>
         <Button onClick={props.close}>取消</Button>
-        <Button disabled={lock()} onClick={() => handleSubmit()}>
+        <Button
+          disabled={lock()}
+          onClick={() => handleSubmit()}
+          startIcon={lock() && <CircularProgress size={16} />}
+        >
           提交
         </Button>
       </DialogActions>
