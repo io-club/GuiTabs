@@ -14,7 +14,6 @@ import {
 } from "@suid/material";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom from "../../state";
-import { CheckBox } from "@suid/icons-material";
 
 interface FormValues {
   url: string;
