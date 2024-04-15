@@ -61,6 +61,7 @@ export function Thief(props: FormProps) {
           setError("拉了");
         }
         setDone(true);
+        setLock(false);
         props.onSubmit();
       })
       .catch((error) => {
