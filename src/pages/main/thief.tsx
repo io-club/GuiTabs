@@ -9,9 +9,12 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  FormControlLabel,
+  Checkbox,
 } from "@suid/material";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom from "../../state";
+import { CheckBox } from "@suid/icons-material";
 
 interface FormValues {
   url: string;
@@ -102,10 +105,42 @@ export function Thief(props: FormProps) {
             }
           />
         </div>
+        <div style={{ display: "flex", "flex-direction": "row", gap: "1rem" }}>
+          <FormControl>
+            <TextField
+              label="相似度"
+              type="number"
+              defaultValue={0.85}
+              onChange={(e) => {
+                setValues({
+                  ...values(),
+                  similarity: parseFloat(e.target.value),
+                });
+              }}
+            />
+          </FormControl>
+          <FormControl>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  onChange={(e) => {
+                    setValues({
+                      ...values(),
+                      invert: e.target.checked,
+                    });
+                  }}
+                />
+              }
+              label="反转"
+            />
+          </FormControl>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={props.close}>取消</Button>
-        <Button disabled={lock()} onClick={() => handleSubmit()}>提交</Button>
+        <Button disabled={lock()} onClick={() => handleSubmit()}>
+          提交
+        </Button>
       </DialogActions>
     </>
   );

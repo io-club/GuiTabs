@@ -26,6 +26,8 @@ export type TheftMeta = {
   mode?: number;
   skip?: number;
   addTime?: string;
+  invert?: boolean;
+  similarity?: number;
 };
 
 export type TheftDataEntry = {

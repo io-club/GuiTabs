@@ -141,6 +141,7 @@ export default function App() {
                 height: `auto`,
                 "max-width": `100%`,
                 "max-height": `100%`,
+                filter: content.data.meta?.invert ? "invert(1)" : "none",
               }}
             ></img>
           </>
