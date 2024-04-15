@@ -120,17 +120,6 @@ export function Thief(props: FormProps) {
               <MenuItem value={3}>色彩</MenuItem>
             </Select>
           </FormControl>
-          <TextField
-            label="跳过帧数"
-            type="number"
-            value={values().skip}
-            defaultValue={0}
-            onChange={(e) =>
-              setValues({ ...values(), skip: parseInt(e.target.value) })
-            }
-          />
-        </div>
-        <div style={{ display: "flex", "flex-direction": "row", gap: "1rem" }}>
           <FormControl>
             <TextField
               label="相似度"
@@ -144,27 +133,36 @@ export function Thief(props: FormProps) {
               }}
             />
           </FormControl>
-          <FormControl>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  onChange={(e) => {
-                    setValues({
-                      ...values(),
-                      invert: e.target.checked,
-                    });
-                  }}
-                />
-              }
-              label="反转"
-            />
-          </FormControl>
+          <TextField
+            label="跳过帧数"
+            type="number"
+            value={values().skip}
+            defaultValue={0}
+            onChange={(e) =>
+              setValues({ ...values(), skip: parseInt(e.target.value) })
+            }
+          />
         </div>
+        <FormControl sx={{ml: 1}} size="small">
+          <FormControlLabel
+            control={
+              <Checkbox
+                onChange={(e) => {
+                  setValues({
+                    ...values(),
+                    invert: e.target.checked,
+                  });
+                }}
+              />
+            }
+            label="反转"
+          />
+        </FormControl>
       </DialogContent>
       <DialogActions>
         <Button onClick={props.close}>取消</Button>
         <Button
-          disabled={lock()}
+          disabled={lock() || values().url === "" || values().name === ""}
           onClick={() => handleSubmit()}
           startIcon={lock() && <CircularProgress size={16} />}
         >
