@@ -43,6 +43,7 @@ export function Thief(props: FormProps) {
   const [lock, setLock] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
   const [done, setDone] = createSignal(false);
+  const [similarityNotValid, setSimilarityNotValid] = createSignal(false);
 
   const apiURL = useAtom(apiUrlAtom)[0];
 
@@ -123,12 +124,21 @@ export function Thief(props: FormProps) {
           <FormControl>
             <TextField
               label="相似度"
-              type="number"
+              error={similarityNotValid()}
               defaultValue={0.85}
               onChange={(e) => {
+                if (Number.isNaN(parseFloat(e.target.value))) {
+                  setSimilarityNotValid(true);
+                  return;
+                }
+                const n = parseFloat(e.target.value);
+                if (n < 0 || n > 1) {
+                  setSimilarityNotValid(true);
+                  return;
+                }
                 setValues({
                   ...values(),
-                  similarity: parseFloat(e.target.value),
+                  similarity: n,
                 });
               }}
             />
@@ -143,7 +153,7 @@ export function Thief(props: FormProps) {
             }
           />
         </div>
-        <FormControl sx={{ml: 1}} size="small">
+        <FormControl sx={{ ml: 1 }} size="small">
           <FormControlLabel
             control={
               <Checkbox
@@ -162,7 +172,12 @@ export function Thief(props: FormProps) {
       <DialogActions>
         <Button onClick={props.close}>取消</Button>
         <Button
-          disabled={lock() || values().url === "" || values().name === ""}
+          disabled={
+            lock() ||
+            values().url === "" ||
+            values().name === "" ||
+            similarityNotValid()
+          }
           onClick={() => handleSubmit()}
           startIcon={lock() && <CircularProgress size={16} />}
         >
