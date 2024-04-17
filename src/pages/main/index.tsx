@@ -2,7 +2,6 @@ import {
   Box,
   Breakpoint,
   Button,
-  ButtonBase,
   CssBaseline,
   Dialog,
   DialogActions,
@@ -19,7 +18,7 @@ import {
   styled,
 } from "@suid/material";
 import TemporaryDrawer, { DrawerHeader } from "./sidebar";
-import { createEffect, createSignal, on, onCleanup } from "solid-js";
+import { createEffect, createSignal, onCleanup } from "solid-js";
 import { Tabs as tabsData } from "../../data";
 import { UnionTabs } from "../../types";
 import { useAtom } from "solid-jotai";

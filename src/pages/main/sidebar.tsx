@@ -1,12 +1,8 @@
-import InboxIcon from "@suid/icons-material/MoveToInbox";
 import {
   Box,
-  Checkbox,
   Chip,
   Divider,
   Drawer,
-  FormControlLabel,
-  FormGroup,
   IconButton,
   Link,
   List,
@@ -29,7 +25,7 @@ import {
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom from "../../state";
-import { ChevronLeftRounded } from "@suid/icons-material";
+import { ChevronLeftRounded, QueueMusicRounded } from "@suid/icons-material";
 
 type Anchor = NonNullable<DrawerProps["anchor"]>;
 
@@ -50,10 +46,11 @@ export default function TemporaryDrawer(props: {
   setOpen: (open: boolean) => void;
   key: string | number;
 }) {
+  const allTagsTag = "all tabs";
   const open = () => props.open;
   const originTabs: ListItemTab[] = Object.entries(props.tabs).map(
     ([key, value]) => {
-      let tags = ["default"];
+      let tags = [allTagsTag];
       if (Array.isArray(value.tag)) {
         tags = [...tags, ...value.tag];
       } else if (value.tag) {
@@ -69,7 +66,7 @@ export default function TemporaryDrawer(props: {
   );
 
   const [theftData, setTheftData] = createSignal<TheftData>([]);
-  const [theftEnabled, setTheftEnabled] = createSignal(true);
+  const [theftEnabled, setTheftEnabled] = createSignal(false);
   const [selectedTab, setSelectedTab] = createSignal<UnionTabs>();
   const [smallSize, setSmallSize] = createSignal(window.innerWidth < 520);
   const apiURL = useAtom(apiUrlAtom)[0];
@@ -98,7 +95,7 @@ export default function TemporaryDrawer(props: {
     .reduce((prev, curr) => prev.concat(curr))
     .filter((tag, index, self) => self.indexOf(tag) === index);
 
-  let [selectedTags, setSelectedTags] = createSignal(["default"]);
+  let [selectedTags, setSelectedTags] = createSignal([allTagsTag]);
 
   let filteredTabs = () =>
     originTabs.filter((tab) =>
@@ -126,12 +123,14 @@ export default function TemporaryDrawer(props: {
                 smallSize() && props.setOpen(false);
               }}
             >
-              <ListItemIcon>{<InboxIcon />}</ListItemIcon>
+              <ListItemIcon sx={{ mr: -2 }}>
+                <QueueMusicRounded />
+              </ListItemIcon>
               <ListItemText primary={tab["name"]} />
             </ListItemButton>
           </ListItem>
         ))}
-        {theftEnabled() &&
+        {(theftEnabled() || selectedTags().includes(allTagsTag)) &&
           theftData().map((data) => (
             <ListItem disablePadding>
               <ListItemButton
@@ -146,7 +145,9 @@ export default function TemporaryDrawer(props: {
                   smallSize() && props.setOpen(false);
                 }}
               >
-                <ListItemIcon>{<InboxIcon />}</ListItemIcon>
+                <ListItemIcon sx={{ mr: -2 }}>
+                  <QueueMusicRounded />
+                </ListItemIcon>
                 <ListItemText primary={data["name"]} />
               </ListItemButton>
             </ListItem>
@@ -198,28 +199,39 @@ export default function TemporaryDrawer(props: {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <Box sx={{ p: 2, display: "flex", gap: 1 }}>
+        <Box
+          sx={{
+            width: "calc(100% - 3em)",
+            py: 2,
+            m: "0 auto",
+            display: "flex",
+            gap: 1,
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+          }}
+        >
           {/* tags */}
           {allTags.map((v) => (
             <Chip
               onClick={() => {
                 const checked = !selectedTags().includes(v);
-                if (v === "default") {
-                  setSelectedTags(["default"]);
+                if (v === allTagsTag) {
+                  setSelectedTags([allTagsTag]);
+                  setTheftEnabled(false);
                   return;
                 }
                 if (checked) {
                   setSelectedTags([
                     v,
-                    ...selectedTags().filter((tag) => tag !== "default"),
+                    ...selectedTags().filter((tag) => tag !== allTagsTag),
                   ]);
                 } else {
                   const currenTags = selectedTags();
                   currenTags.splice(currenTags.indexOf(v), 1);
                   setSelectedTags([...currenTags]);
                 }
-                if (selectedTags().length === 0) {
-                  setSelectedTags(["default"]);
+                if (selectedTags().length === 0 && !theftEnabled()) {
+                  setSelectedTags([allTagsTag]);
                 }
               }}
               color={selectedTags().includes(v) ? "primary" : "default"}
@@ -228,7 +240,15 @@ export default function TemporaryDrawer(props: {
           ))}
           <Chip
             onClick={() => {
+              if (!theftEnabled()) {
+                setSelectedTags(
+                  selectedTags().filter((tag) => tag !== allTagsTag)
+                );
+              }
               setTheftEnabled(!theftEnabled());
+              if (selectedTags().length === 0 && !theftEnabled()) {
+                setSelectedTags([allTagsTag]);
+              }
             }}
             color={theftEnabled() ? "primary" : "default"}
             label="theft"
