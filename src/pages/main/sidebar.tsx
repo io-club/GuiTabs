@@ -2,6 +2,7 @@ import InboxIcon from "@suid/icons-material/MoveToInbox";
 import {
   Box,
   Checkbox,
+  Chip,
   Divider,
   Drawer,
   FormControlLabel,
@@ -197,42 +198,41 @@ export default function TemporaryDrawer(props: {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <Box>
+        <Box sx={{ p: 2, display: "flex", gap: 1 }}>
           {/* tags */}
-          <FormGroup sx={{ p: 3 }}>
-            {allTags.map((v) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    size="small"
-                    onChange={(e, checked) => {
-                      if (checked) {
-                        setSelectedTags([v, ...selectedTags()]);
-                      } else {
-                        const currenTags = selectedTags();
-                        currenTags.splice(currenTags.indexOf(v), 1);
-                        setSelectedTags([...currenTags]);
-                      }
-                    }}
-                    checked={selectedTags().includes(v)}
-                  />
+          {allTags.map((v) => (
+            <Chip
+              onClick={() => {
+                const checked = !selectedTags().includes(v);
+                if (v === "default") {
+                  setSelectedTags(["default"]);
+                  return;
                 }
-                label={v}
-              />
-            ))}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  size="small"
-                  onChange={(e, checked) => {
-                    setTheftEnabled(checked);
-                  }}
-                  checked={theftEnabled()}
-                />
-              }
-              label="theft"
+                if (checked) {
+                  setSelectedTags([
+                    v,
+                    ...selectedTags().filter((tag) => tag !== "default"),
+                  ]);
+                } else {
+                  const currenTags = selectedTags();
+                  currenTags.splice(currenTags.indexOf(v), 1);
+                  setSelectedTags([...currenTags]);
+                }
+                if (selectedTags().length === 0) {
+                  setSelectedTags(["default"]);
+                }
+              }}
+              color={selectedTags().includes(v) ? "primary" : "default"}
+              label={v}
             />
-          </FormGroup>
+          ))}
+          <Chip
+            onClick={() => {
+              setTheftEnabled(!theftEnabled());
+            }}
+            color={theftEnabled() ? "primary" : "default"}
+            label="theft"
+          />
         </Box>
         <Divider />
       </Box>

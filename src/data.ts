@@ -3,9 +3,7 @@ import { TabMap } from "./types";
 export const Tabs: TabMap = {
   Peace: {
     name: "Peace",
-    url: [
-      "/finger/peace/1.png"
-    ],
+    url: ["/finger/peace/1.png"],
     type: "png",
   },
   like_a_star: {
@@ -45,10 +43,7 @@ export const Tabs: TabMap = {
   },
   flower: {
     name: "flower",
-    url: [
-      "/finger/flower/1.png",
-      "/finger/flower/2.png"
-    ],
+    url: ["/finger/flower/1.png", "/finger/flower/2.png"],
     type: "png",
     tag: ["trdthg"],
   },
@@ -62,12 +57,20 @@ export const Tabs: TabMap = {
     type: "webp",
     tag: ["trdthg"],
   },
+  the_rain: {
+    name: "The Rain",
+    url: [
+      "/finger/the_rain/0.png",
+      "/finger/the_rain/1.png",
+      "/finger/the_rain/2.png",
+      "/finger/the_rain/3.png",
+    ],
+    type: "png",
+    tag: ["RCE0"],
+  },
   huahai: {
     name: "花海 电吉他",
-    url: [
-      "/finger/huahai/1.png",
-      "/finger/huahai/2.png"
-    ],
+    url: ["/finger/huahai/1.png", "/finger/huahai/2.png"],
     type: "png",
   },
   april_encounter: {
@@ -99,9 +102,7 @@ export const Tabs: TabMap = {
   },
   langbei: {
     name: "狼狈",
-    url: [
-      "/strum/langbei/1.png"
-    ],
+    url: ["/strum/langbei/1.png"],
     type: "png",
   },
-}
+};
