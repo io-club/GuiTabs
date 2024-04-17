@@ -27,6 +27,9 @@ import { useAtom } from "solid-jotai";
 import apiUrlAtom from "../../state";
 import { ChevronLeftRounded, QueueMusicRounded } from "@suid/icons-material";
 
+import "./style.css";
+import { drawerWidth, smallSizeWidth } from ".";
+
 type Anchor = NonNullable<DrawerProps["anchor"]>;
 
 export const DrawerHeader = styled("div")(({ theme }) => ({
@@ -68,12 +71,14 @@ export default function TemporaryDrawer(props: {
   const [theftData, setTheftData] = createSignal<TheftData>([]);
   const [theftEnabled, setTheftEnabled] = createSignal(false);
   const [selectedTab, setSelectedTab] = createSignal<UnionTabs>();
-  const [smallSize, setSmallSize] = createSignal(window.innerWidth < 520);
+  const [smallSize, setSmallSize] = createSignal(
+    window.innerWidth < smallSizeWidth
+  );
   const apiURL = useAtom(apiUrlAtom)[0];
 
   createEffect(() => {
     const handleResize = () => {
-      setSmallSize(window.innerWidth < 520);
+      setSmallSize(window.innerWidth < smallSizeWidth);
     };
 
     window.addEventListener("resize", handleResize);
@@ -199,17 +204,7 @@ export default function TemporaryDrawer(props: {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <Box
-          sx={{
-            width: "calc(100% - 3em)",
-            py: 2,
-            m: "0 auto",
-            display: "flex",
-            gap: 1,
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-          }}
-        >
+        <Box class="TagsBox">
           {/* tags */}
           {allTags.map((v) => (
             <Chip

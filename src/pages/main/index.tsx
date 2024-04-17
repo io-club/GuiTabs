@@ -33,6 +33,9 @@ import {
   SmartDisplayRounded,
 } from "@suid/icons-material";
 
+export const drawerWidth = 240;
+export const smallSizeWidth = 800;
+
 export default function App() {
   const [tabs, setTabs] = createSignal<UnionTabs>();
   const [open, setOpen] = createSignal(false);
@@ -44,13 +47,19 @@ export default function App() {
   const [stealDialogOpen, setStealDialogOpen] = createSignal(false);
   const [apiURL, setAPIURL] = useAtom(apiUrlAtom);
   const [internalURL, setInternalURL] = createSignal("");
-  const [smallSize, setSmallSize] = createSignal(window.innerWidth < 520);
+  const [smallSize, setSmallSize] = createSignal(
+    window.innerWidth < smallSizeWidth
+  );
 
   const [dataVersionKey, setDataVersionKey] = createSignal(0);
 
-  // init if null
   createEffect(() => {
+    // init if null
     if (typeof apiURL() !== "string") setAPIURL(defaultApiUrl);
+
+    // add CSS variables to root
+    const root = document.documentElement;
+    root.style.setProperty("--drawer-width", drawerWidth + "px");
   });
 
   // show the drawer if tabs is empty
@@ -64,7 +73,7 @@ export default function App() {
 
   createEffect(() => {
     const handleResize = () => {
-      setSmallSize(window.innerWidth < 520);
+      setSmallSize(window.innerWidth < smallSizeWidth);
     };
 
     window.addEventListener("resize", handleResize);
@@ -74,8 +83,6 @@ export default function App() {
     });
   });
 
-  const drawerWidth = 240;
-
   const Main = styled("main")(({ theme }: { theme: Theme<Breakpoint> }) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
@@ -83,7 +90,7 @@ export default function App() {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: `-${drawerWidth}px`,
+    marginLeft: "calc(-1 * var(--drawer-width))",
   }));
 
   interface AppBarProps extends MuiAppBarProps {
@@ -209,8 +216,8 @@ export default function App() {
         style={
           open() &&
           !smallSize() && {
-            width: `calc(100% - ${drawerWidth}px)`,
-            "margin-left": `${drawerWidth}px`,
+            width: "calc(100% - var(--drawer-width))",
+            "margin-left": "var(--drawer-width)",
           }
         }
       >
