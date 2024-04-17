@@ -8,3 +8,57 @@
   justify-content: space-between;
   overflow: hidden;
 }
+
+.Search {
+  border: 1px solid hsla(0, 0%, 20%, 0.2);
+  border-radius: 999px;
+  font-size: 11pt;
+  width: 0;
+  flex-grow: 1;
+  padding: 5.5px 10px 6.5px 10px;
+  transition: 0.2s;
+}
+
+.Search:focus {
+  outline: none;
+  border-color: hsla(0, 0%, 20%, 0.5);
+  background-color: hsla(0, 0%, 20%, 0.05);
+}
+
+.Search::placeholder {
+  color: hsla(0, 0%, 20%, 0.5);
+}
+
+[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  background-color: hsla(0, 0%, 20%, 0.5);
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23777'><path d='M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12z'/></svg>");
+  height: 18px;
+  width: 18px;
+  margin: 0.25px -4px 0 0;
+  cursor: pointer;
+  transition: 175ms;
+}
+
+.SearchBox {
+  flex-grow: 1;
+  display: flex;
+  gap: 2px;
+  margin-left: 8px;
+  align-items: center;
+  transition: 175ms;
+}
+
+.WoW {
+  opacity: 0.75;
+  transition: 175ms !important;
+}
+
+.SearchBox:has(input:not(:placeholder-shown)) > .WoW {
+  margin-left: -22px;
+  opacity: 0;
+}
+.SearchBox:has(input:focus) > .WoW {
+  margin-left: -22px;
+  opacity: 0;
+}

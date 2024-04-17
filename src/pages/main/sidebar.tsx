@@ -25,7 +25,11 @@ import {
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom from "../../state";
-import { ChevronLeftRounded, QueueMusicRounded } from "@suid/icons-material";
+import {
+  ChevronLeftRounded,
+  QueueMusicRounded,
+  SearchRounded,
+} from "@suid/icons-material";
 
 import "./style.css";
 import { drawerWidth, smallSizeWidth } from ".";
@@ -71,6 +75,7 @@ export default function TemporaryDrawer(props: {
   const [theftData, setTheftData] = createSignal<TheftData>([]);
   const [theftEnabled, setTheftEnabled] = createSignal(false);
   const [selectedTab, setSelectedTab] = createSignal<UnionTabs>();
+  const [searchTerm, setSearchTerm] = createSignal("");
   const [smallSize, setSmallSize] = createSignal(
     window.innerWidth < smallSizeWidth
   );
@@ -103,17 +108,57 @@ export default function TemporaryDrawer(props: {
   let [selectedTags, setSelectedTags] = createSignal([allTagsTag]);
 
   let filteredTabs = () =>
-    originTabs.filter((tab) =>
-      tab.tags.some((tag) => selectedTags().includes(tag))
+    originTabs.filter(
+      (tab) =>
+        tab.tags.some((tag) => selectedTags().includes(tag)) &&
+        tab.name
+          .toLowerCase()
+          .replace(" ", "")
+          .includes(searchTerm().toLowerCase().replace(" ", ""))
+    );
+
+  let filteredTheftData = () =>
+    theftData().filter(
+      (data) =>
+        data.name
+          .toLowerCase()
+          .replace(" ", "")
+          .includes(searchTerm().toLowerCase().replace(" ", "")) ||
+        (data.meta?.name ?? "")
+          .toLowerCase()
+          .replace(" ", "")
+          .includes(searchTerm().toLowerCase().replace(" ", "")) ||
+        (data.meta?.url ?? "")
+          .toLowerCase()
+          .replace(" ", "")
+          .includes(searchTerm().toLowerCase().replace(" ", ""))
     );
 
   const list = (anchor: Anchor) => (
     <Box
-      sx={{ width: anchor === "top" || anchor === "bottom" ? "auto" : 250 }}
+      sx={{
+        width: anchor === "top" || anchor === "bottom" ? "auto" : drawerWidth,
+      }}
       role="presentation"
     >
-      <List>
+      <List disablePadding>
         {/* tab list */}
+        {filteredTabs().length === 0 && searchTerm().length > 0 && (
+          <ListItem>
+            <Typography
+              variant="h5"
+              color="textSecondary"
+              sx={{
+                display: "block",
+                width: "100%",
+                textAlign: "center",
+                py: 8,
+              }}
+            >
+              No result found
+            </Typography>
+          </ListItem>
+        )}
         {filteredTabs().map((tab) => (
           <ListItem disablePadding>
             <ListItemButton
@@ -136,7 +181,7 @@ export default function TemporaryDrawer(props: {
           </ListItem>
         ))}
         {(theftEnabled() || selectedTags().includes(allTagsTag)) &&
-          theftData().map((data) => (
+          filteredTheftData().map((data) => (
             <ListItem disablePadding>
               <ListItemButton
                 selected={
@@ -193,7 +238,17 @@ export default function TemporaryDrawer(props: {
         backgroundColor={createTheme().palette.background.paper}
         style={{ position: "sticky", top: 0, "z-index": 9999 }}
       >
-        <DrawerHeader>
+        <DrawerHeader sx={{ width: "var(--drawer-width)", gap: "8px" }}>
+          <Box class="SearchBox">
+            <SearchRounded class="WoW" fontSize="small" />
+            <input
+              type="search"
+              onInput={(e) => setSearchTerm(e.currentTarget.value)}
+              class="Search"
+              placeholder="Search"
+              autocomplete="on"
+            />
+          </Box>
           <IconButton
             size="small"
             onClick={() => {
