@@ -143,7 +143,7 @@ export default function TemporaryDrawer(props: {
     >
       <List disablePadding>
         {/* tab list */}
-        {filteredTabs().length === 0 && filteredTheftData() && (
+        {filteredTabs().length === 0 && filteredTheftData().length === 0 && (
           <ListItem>
             <Typography
               variant="h5"
