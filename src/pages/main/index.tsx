@@ -7,6 +7,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   List,
   ListItem,
@@ -33,6 +34,8 @@ import {
   SmartDisplayRounded,
 } from "@suid/icons-material";
 
+import "./style.css";
+
 export const drawerWidth = 240;
 export const smallSizeWidth = 800;
 
@@ -50,6 +53,7 @@ export default function App() {
   const [smallSize, setSmallSize] = createSignal(
     window.innerWidth < smallSizeWidth
   );
+  const [tabsNameOverflow, setTabsNameOverflow] = createSignal(false);
 
   const [dataVersionKey, setDataVersionKey] = createSignal(0);
 
@@ -71,12 +75,33 @@ export default function App() {
     }
   });
 
-  createEffect(() => {
-    const handleResize = () => {
-      setSmallSize(window.innerWidth < smallSizeWidth);
-    };
+  const handleResize = () => {
+    setSmallSize(window.innerWidth < smallSizeWidth);
+    const tabHeadingWidth =
+      window.innerWidth -
+      (document.getElementById("headingButtons")?.getBoundingClientRect()
+        .width ?? 0) -
+      70;
 
+    const root = document.documentElement;
+    root.style.setProperty(
+      "--tab-heading-width",
+      tabHeadingWidth.toString() + "px"
+    );
+
+    const tabsNameBlockWidth = document
+      .getElementById("tabsNameBlock")
+      .getBoundingClientRect().width;
+
+    console.log(tabsNameBlockWidth, tabHeadingWidth);
+
+    setTabsNameOverflow(tabsNameBlockWidth > tabHeadingWidth - 80);
+  };
+
+  createEffect(() => {
     window.addEventListener("resize", handleResize);
+
+    handleResize();
 
     onCleanup(() => {
       window.removeEventListener("resize", handleResize);
@@ -227,36 +252,19 @@ export default function App() {
             onClick={() => {
               setOpen(true);
             }}
-            sx={{
-              transition: "355ms cubic-bezier(0, 0, 0.2, 1) 225ms",
-              transform: `translateX(${!open() ? "0" : "-2em"})`,
-              opacity: !open() ? 1 : 0,
-              cursor: !open() ? "pointer" : "default",
-            }}
+            class={open() && !smallSize() ? "Hideable Hide" : "Hideable"}
           >
             <MenuRounded />
           </IconButton>
           <div
-            style={{
-              transition: "transform 355ms cubic-bezier(0, 0, 0.2, 1) 225ms",
-              transform: `translateX(${!open() ? "0" : "-2em"})`,
-            }}
+            id="tabHeading"
+            class={open() && !smallSize() ? "TabHeading Hide" : "TabHeading"}
           >
-            <span
-              style={{
-                "text-align": "right",
-                "text-decoration": "overline",
-                "font-weight": "bold",
-                transform: "translateY(0.1em)",
-                display: "inline-block",
-                margin: "0 10px",
-              }}
-            >
-              {tabs()?.data?.name ?? "GuiTabs"}
-            </span>
+            <div class={tabsNameOverflow() ? "GuiTabs Overflow" : "GuiTabs"}>
+              <div id="tabsNameBlock">{tabs()?.data?.name ?? "GuiTabs"}</div>
+            </div>
             {tabs() && metaButton(tabs())}
           </div>
-
           {
             <Dialog
               open={stealDialogOpen()}
@@ -303,28 +311,42 @@ export default function App() {
               </DialogActions>
             </Dialog>
           }
-          <div style={{ "flex-grow": 1 }}></div>
-          <Button
-            variant="text"
-            size="small"
-            onClick={() => {
-              setOpen(false);
-              setStealDialogOpen(true);
-            }}
+          <div
+            id="headingButtons"
+            style={{ display: "flex", "flex-wrap": "nowrap" }}
           >
-            Steal
-          </Button>
-          <Button
-            variant="text"
-            size="small"
-            onClick={() => {
-              setOpen(false);
-              setInternalURL(apiURL());
-              setApiDialogOpen(true);
-            }}
-          >
-            API
-          </Button>
+            {
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{
+                  transition: "225ms",
+                  opacity: tabsNameOverflow() ? 1 : 0,
+                }}
+              />
+            }
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+                setStealDialogOpen(true);
+              }}
+            >
+              Steal
+            </Button>
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+                setInternalURL(apiURL());
+                setApiDialogOpen(true);
+              }}
+            >
+              API
+            </Button>
+          </div>
         </Toolbar>
       </AppBar>
       <Main
@@ -358,11 +380,13 @@ export default function App() {
           setInfoOpen(false);
           setInfoAnchorEl(null);
           setTabs({ type: "preset", data: tabsData[title] });
+          handleResize();
         }}
         onTheftData={(data) => {
           setInfoOpen(false);
           setInfoAnchorEl(null);
           setTabs({ type: "theft", data: data });
+          handleResize();
         }}
         setOpen={setOpen}
       />

@@ -238,7 +238,7 @@ export default function TemporaryDrawer(props: {
         backgroundColor={createTheme().palette.background.paper}
         style={{ position: "sticky", top: 0, "z-index": 9999 }}
       >
-        <DrawerHeader sx={{ width: "var(--drawer-width)", gap: "8px" }}>
+        <DrawerHeader sx={{ width: "var(--drawer-width)", gap: "8px", pr: smallSize() ? 2 : 1 }}>
           <Box class="SearchBox">
             <SearchRounded class="WoW" fontSize="small" />
             <input
@@ -249,14 +249,16 @@ export default function TemporaryDrawer(props: {
               autocomplete="on"
             />
           </Box>
-          <IconButton
-            size="small"
-            onClick={() => {
-              props.setOpen(false);
-            }}
-          >
-            <ChevronLeftRounded />
-          </IconButton>
+          {!smallSize() && (
+            <IconButton
+              size="small"
+              onClick={() => {
+                props.setOpen(false);
+              }}
+            >
+              <ChevronLeftRounded />
+            </IconButton>
+          )}
         </DrawerHeader>
         <Divider />
         <Box class="TagsBox">
