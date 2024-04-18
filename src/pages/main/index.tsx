@@ -211,7 +211,7 @@ export default function App() {
             >
               <List dense disablePadding subheader={<ListItem>参数</ListItem>}>
                 {Object.entries(meta).map(([key, value]) => (
-                  <ListItem>
+                  <ListItem dense>
                     <ListItemText
                       primary={key}
                       secondary={
