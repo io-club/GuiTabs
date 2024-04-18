@@ -143,7 +143,7 @@ export default function TemporaryDrawer(props: {
     >
       <List disablePadding>
         {/* tab list */}
-        {filteredTabs().length === 0 && searchTerm().length > 0 && (
+        {filteredTabs().length === 0 && filteredTheftData() && (
           <ListItem>
             <Typography
               variant="h5"
@@ -238,7 +238,13 @@ export default function TemporaryDrawer(props: {
         backgroundColor={createTheme().palette.background.paper}
         style={{ position: "sticky", top: 0, "z-index": 9999 }}
       >
-        <DrawerHeader sx={{ width: "var(--drawer-width)", gap: "8px", pr: smallSize() ? 2 : 1 }}>
+        <DrawerHeader
+          sx={{
+            width: "var(--drawer-width)",
+            gap: "8px",
+            pr: smallSize() ? 2 : 1,
+          }}
+        >
           <Box class="SearchBox">
             <SearchRounded class="WoW" fontSize="small" />
             <input
