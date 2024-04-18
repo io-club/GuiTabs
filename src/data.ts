@@ -68,6 +68,12 @@ export const Tabs: TabMap = {
     type: "png",
     tag: ["RCE0"],
   },
+  auld_lang_syne: {
+    name: "Auld Lang Syne",
+    url: ["/finger/auld_lang_syne/0.png"],
+    type: "png",
+    tag: ["RCE0"],
+  },
   huahai: {
     name: "花海 电吉他",
     url: ["/finger/huahai/1.png", "/finger/huahai/2.png"],
