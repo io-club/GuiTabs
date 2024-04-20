@@ -224,11 +224,13 @@ export default function App() {
             </Menu>
           </>
         )}
-        <a href={meta.url} target="_blank">
-          <IconButton color="primary">
-            <SmartDisplayRounded />
-          </IconButton>
-        </a>
+        {meta.url && (
+          <a href={meta.url} target="_blank">
+            <IconButton color="primary">
+              <SmartDisplayRounded />
+            </IconButton>
+          </a>
+        )}
       </>
     );
   };

@@ -21,13 +21,15 @@ export interface ListItemTab extends _Tab {
 }
 
 export type TheftMeta = {
-  url: string;
+  url?: string;
   name?: string;
   mode?: number;
   skip?: number;
   addTime?: string;
   invert?: boolean;
   similarity?: number;
+  tags?: string[];
+  pdfHash?: string;
 };
 
 export type TheftDataEntry = {
