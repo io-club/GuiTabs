@@ -5,6 +5,7 @@ export const Tabs: TabMap = {
     name: "Peace",
     url: ["/finger/peace/1.png"],
     type: "png",
+    tag: ["Prog"],
   },
   like_a_star: {
     name: "like a star",
@@ -71,12 +72,6 @@ export const Tabs: TabMap = {
   auld_lang_syne: {
     name: "Auld Lang Syne",
     url: ["/finger/auld_lang_syne/0.png"],
-    type: "png",
-    tag: ["RCE0"],
-  },
-  tit: {
-    name: "山雀",
-    url: ["/finger/tit/0.png", "/finger/tit/1.png"],
     type: "png",
     tag: ["RCE0"],
   },

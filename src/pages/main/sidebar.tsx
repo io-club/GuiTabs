@@ -73,14 +73,17 @@ export default function TemporaryDrawer(props: {
   );
 
   const [theftData, setTheftData] = createSignal<TheftData>([]);
-  const [theftEnabled, setTheftEnabled] = createSignal(false);
   const [selectedTab, setSelectedTab] = createSignal<UnionTabs>();
   const [searchTerm, setSearchTerm] = createSignal("");
   const [smallSize, setSmallSize] = createSignal(
     window.innerWidth < smallSizeWidth
   );
 
-  const [theftTags, setTheftTags] = createSignal<string[]>([]);
+  let tagsFromOriginData = new Set<string>(
+    originTabs.map((entry) => entry.tags).flat()
+  );
+  const [availableTags, setAvailableTags] =
+    createSignal<Set<string>>(tagsFromOriginData);
 
   const apiURL = useAtom(apiUrlAtom)[0];
 
@@ -100,20 +103,14 @@ export default function TemporaryDrawer(props: {
     const response = await fetch(apiURL() + "/list");
     const data = (await response.json()) as TheftData;
     setTheftData(data);
-    let newTags: string[] = [];
+    let newTags = new Set<string>(availableTags());
     data.forEach((entry) => {
       if (entry.meta?.tags) {
-        newTags = [...newTags, ...entry.meta.tags];
+        entry.meta.tags.forEach((tag) => newTags.add(tag));
       }
     });
-    setTheftTags(newTags);
+    setAvailableTags(newTags);
   });
-
-  // get all tags in tabs and delete dup tags
-  const allTags = originTabs
-    .map((tab) => tab.tags)
-    .reduce((prev, curr) => prev.concat(curr))
-    .filter((tag, index, self) => self.indexOf(tag) === index);
 
   let [selectedTags, setSelectedTags] = createSignal([allTagsTag]);
 
@@ -130,18 +127,21 @@ export default function TemporaryDrawer(props: {
   let filteredTheftData = () =>
     theftData().filter(
       (data) =>
-        data.name
+        (data.meta?.tags ?? [])
+          .concat([allTagsTag])
+          .some((tag) => selectedTags().includes(tag)) &&
+        (data.name
           .toLowerCase()
           .replace(" ", "")
           .includes(searchTerm().toLowerCase().replace(" ", "")) ||
-        (data.meta?.name ?? "")
-          .toLowerCase()
-          .replace(" ", "")
-          .includes(searchTerm().toLowerCase().replace(" ", "")) ||
-        (data.meta?.url ?? "")
-          .toLowerCase()
-          .replace(" ", "")
-          .includes(searchTerm().toLowerCase().replace(" ", ""))
+          (data.meta?.name ?? "")
+            .toLowerCase()
+            .replace(" ", "")
+            .includes(searchTerm().toLowerCase().replace(" ", "")) ||
+          (data.meta?.url ?? "")
+            .toLowerCase()
+            .replace(" ", "")
+            .includes(searchTerm().toLowerCase().replace(" ", "")))
     );
 
   const list = (anchor: Anchor) => (
@@ -190,36 +190,27 @@ export default function TemporaryDrawer(props: {
             </ListItemButton>
           </ListItem>
         ))}
-        {(theftEnabled() || selectedTags().includes(allTagsTag)) &&
-          filteredTheftData().map((data) => {
-            if (
-              !theftEnabled() &&
-              !selectedTags().some((tag) => theftTags().includes(tag))
-            ) {
-              return <></>;
-            }
-            return (
-              <ListItem disablePadding>
-                <ListItemButton
-                  selected={
-                    selectedTab() &&
-                    selectedTab().type === "theft" &&
-                    selectedTab().data === data
-                  }
-                  onClick={() => {
-                    setSelectedTab({ type: "theft", data: data });
-                    props.onTheftData(data);
-                    smallSize() && props.setOpen(false);
-                  }}
-                >
-                  <ListItemIcon sx={{ mr: -2 }}>
-                    <QueueMusicRounded />
-                  </ListItemIcon>
-                  <ListItemText primary={data["name"]} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
+        {filteredTheftData().map((data) => (
+          <ListItem disablePadding>
+            <ListItemButton
+              selected={
+                selectedTab() &&
+                selectedTab().type === "theft" &&
+                selectedTab().data === data
+              }
+              onClick={() => {
+                setSelectedTab({ type: "theft", data: data });
+                props.onTheftData(data);
+                smallSize() && props.setOpen(false);
+              }}
+            >
+              <ListItemIcon sx={{ mr: -2 }}>
+                <QueueMusicRounded />
+              </ListItemIcon>
+              <ListItemText primary={data["name"]} />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
       <Typography
         variant="caption"
@@ -287,13 +278,12 @@ export default function TemporaryDrawer(props: {
         <Divider />
         <Box class="TagsBox">
           {/* tags */}
-          {allTags.map((v) => (
+          {Array.from(availableTags()).map((v) => (
             <Chip
               onClick={() => {
                 const checked = !selectedTags().includes(v);
                 if (v === allTagsTag) {
                   setSelectedTags([allTagsTag]);
-                  setTheftEnabled(false);
                   return;
                 }
                 if (checked) {
@@ -306,44 +296,7 @@ export default function TemporaryDrawer(props: {
                   currenTags.splice(currenTags.indexOf(v), 1);
                   setSelectedTags([...currenTags]);
                 }
-                if (selectedTags().length === 0 && !theftEnabled()) {
-                  setSelectedTags([allTagsTag]);
-                }
-              }}
-              color={selectedTags().includes(v) ? "primary" : "default"}
-              label={v}
-            />
-          ))}
-          <Chip
-            onClick={() => {
-              if (!theftEnabled()) {
-                setSelectedTags(
-                  selectedTags().filter((tag) => tag !== allTagsTag)
-                );
-              }
-              setTheftEnabled(!theftEnabled());
-              if (selectedTags().length === 0 && !theftEnabled()) {
-                setSelectedTags([allTagsTag]);
-              }
-            }}
-            color={theftEnabled() ? "primary" : "default"}
-            label="theft"
-          />
-          {theftEnabled() && theftTags().map((v) => (
-            <Chip
-              onClick={() => {
-                const checked = !selectedTags().includes(v);
-                if (checked) {
-                  setSelectedTags([
-                    v,
-                    ...selectedTags().filter((tag) => tag !== allTagsTag),
-                  ]);
-                } else {
-                  const currenTags = selectedTags();
-                  currenTags.splice(currenTags.indexOf(v), 1);
-                  setSelectedTags([...currenTags]);
-                }
-                if (selectedTags().length === 0 && !theftEnabled()) {
+                if (selectedTags().length === 0) {
                   setSelectedTags([allTagsTag]);
                 }
               }}
