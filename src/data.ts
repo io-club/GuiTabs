@@ -74,6 +74,12 @@ export const Tabs: TabMap = {
     type: "png",
     tag: ["RCE0"],
   },
+  tit: {
+    name: "山雀",
+    url: ["/finger/tit/0.png", "/finger/tit/1.png"],
+    type: "png",
+    tag: ["RCE0"],
+  },
   huahai: {
     name: "花海 电吉他",
     url: ["/finger/huahai/1.png", "/finger/huahai/2.png"],
