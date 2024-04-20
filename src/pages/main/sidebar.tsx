@@ -79,6 +79,9 @@ export default function TemporaryDrawer(props: {
   const [smallSize, setSmallSize] = createSignal(
     window.innerWidth < smallSizeWidth
   );
+
+  const [theftTags, setTheftTags] = createSignal<string[]>([]);
+
   const apiURL = useAtom(apiUrlAtom)[0];
 
   createEffect(() => {
@@ -97,6 +100,13 @@ export default function TemporaryDrawer(props: {
     const response = await fetch(apiURL() + "/list");
     const data = (await response.json()) as TheftData;
     setTheftData(data);
+    let newTags: string[] = [];
+    data.forEach((entry) => {
+      if (entry.meta?.tags) {
+        newTags = [...newTags, ...entry.meta.tags];
+      }
+    });
+    setTheftTags(newTags);
   });
 
   // get all tags in tabs and delete dup tags
@@ -181,27 +191,35 @@ export default function TemporaryDrawer(props: {
           </ListItem>
         ))}
         {(theftEnabled() || selectedTags().includes(allTagsTag)) &&
-          filteredTheftData().map((data) => (
-            <ListItem disablePadding>
-              <ListItemButton
-                selected={
-                  selectedTab() &&
-                  selectedTab().type === "theft" &&
-                  selectedTab().data === data
-                }
-                onClick={() => {
-                  setSelectedTab({ type: "theft", data: data });
-                  props.onTheftData(data);
-                  smallSize() && props.setOpen(false);
-                }}
-              >
-                <ListItemIcon sx={{ mr: -2 }}>
-                  <QueueMusicRounded />
-                </ListItemIcon>
-                <ListItemText primary={data["name"]} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+          filteredTheftData().map((data) => {
+            if (
+              !theftEnabled() &&
+              !selectedTags().some((tag) => theftTags().includes(tag))
+            ) {
+              return <></>;
+            }
+            return (
+              <ListItem disablePadding>
+                <ListItemButton
+                  selected={
+                    selectedTab() &&
+                    selectedTab().type === "theft" &&
+                    selectedTab().data === data
+                  }
+                  onClick={() => {
+                    setSelectedTab({ type: "theft", data: data });
+                    props.onTheftData(data);
+                    smallSize() && props.setOpen(false);
+                  }}
+                >
+                  <ListItemIcon sx={{ mr: -2 }}>
+                    <QueueMusicRounded />
+                  </ListItemIcon>
+                  <ListItemText primary={data["name"]} />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
       </List>
       <Typography
         variant="caption"
@@ -311,6 +329,28 @@ export default function TemporaryDrawer(props: {
             color={theftEnabled() ? "primary" : "default"}
             label="theft"
           />
+          {theftEnabled() && theftTags().map((v) => (
+            <Chip
+              onClick={() => {
+                const checked = !selectedTags().includes(v);
+                if (checked) {
+                  setSelectedTags([
+                    v,
+                    ...selectedTags().filter((tag) => tag !== allTagsTag),
+                  ]);
+                } else {
+                  const currenTags = selectedTags();
+                  currenTags.splice(currenTags.indexOf(v), 1);
+                  setSelectedTags([...currenTags]);
+                }
+                if (selectedTags().length === 0 && !theftEnabled()) {
+                  setSelectedTags([allTagsTag]);
+                }
+              }}
+              color={selectedTags().includes(v) ? "primary" : "default"}
+              label={v}
+            />
+          ))}
         </Box>
         <Divider />
       </Box>
