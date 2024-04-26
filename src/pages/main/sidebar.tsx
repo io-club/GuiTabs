@@ -18,7 +18,7 @@ import { DrawerProps } from "@suid/material/Drawer";
 import { TheftData, TheftDataEntry } from "../../types";
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
-import apiUrlAtom from "../../state";
+import { apiUrlAtom, tabsStoreAtom } from "../../state";
 import {
   ChevronLeftRounded,
   QueueMusicRounded,
@@ -48,7 +48,7 @@ export default function TemporaryDrawer(props: {
   const allTagsTag = "all tabs";
   const open = () => props.open;
 
-  const [theftData, setTheftData] = createSignal<TheftData>([]);
+  const [theftData, setTheftData] = useAtom(tabsStoreAtom);
   const [selectedTab, setSelectedTab] = createSignal<TheftDataEntry>();
   const [searchTerm, setSearchTerm] = createSignal("");
   const [smallSize, setSmallSize] = createSignal(

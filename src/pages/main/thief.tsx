@@ -15,7 +15,9 @@ import {
   Alert,
 } from "@suid/material";
 import { useAtom } from "solid-jotai";
-import apiUrlAtom from "../../state";
+import { apiUrlAtom, tabsStoreAtom } from "../../state";
+import { getTheftData } from "../../tabs";
+import { TheftDataEntry } from "../../types";
 
 interface FormValues {
   url: string;
@@ -27,8 +29,8 @@ interface FormValues {
 }
 
 interface FormProps {
-  onSubmit: () => void;
   close: () => void;
+  onTheftData: (data: TheftDataEntry) => void;
 }
 
 export function Thief(props: FormProps) {
@@ -47,8 +49,11 @@ export function Thief(props: FormProps) {
 
   const apiURL = useAtom(apiUrlAtom)[0];
 
+  const [_, setTabs] = useAtom(tabsStoreAtom);
+
   const handleSubmit = () => {
     setLock(true);
+    let submissionName = values().name;
     fetch(apiURL(), {
       method: "POST",
       body: JSON.stringify(values()),
@@ -56,13 +61,21 @@ export function Thief(props: FormProps) {
         "Content-Type": "application/json",
       },
     })
-      .then((res) => {
-        if (res.status !== 200) {
-          setError("拉了");
-        }
+      .then(async (res) => {
         setDone(true);
         setLock(false);
-        props.onSubmit();
+        if (res.status !== 200) {
+          setError("拉了");
+        } else {
+          await getTheftData(apiURL()).then((data) => {
+            setTabs(data);
+            const tab = data.find((t) => t.name === submissionName);
+            if (tab) {
+              props.onTheftData(tab);
+            }
+            props.close();
+          });
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -77,22 +90,7 @@ export function Thief(props: FormProps) {
         style={{ "flex-direction": "column", display: "flex", gap: "1rem" }}
       >
         {error() !== null && <Alert severity="error">{error()}</Alert>}
-        {done() && (
-          <Alert
-            severity="success"
-            action={
-              <Button
-                onClick={() => {
-                  window.location.reload();
-                }}
-              >
-                刷新
-              </Button>
-            }
-          >
-            好了
-          </Alert>
-        )}
+        {done() && <Alert severity="success">好了</Alert>}
         <FormControl style={{ "margin-top": "0.5em" }}>
           <TextField
             label="URL"

@@ -21,7 +21,7 @@ import {
 import TemporaryDrawer, { DrawerHeader } from "./sidebar";
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
-import apiUrlAtom, { defaultApiUrl } from "../../state";
+import { apiUrlAtom, defaultApiUrl } from "../../state";
 import MuiAppBar, {
   AppBarProps as MuiAppBarProps,
 } from "@suid/material/AppBar";
@@ -246,10 +246,7 @@ export default function App() {
               onClose={() => setStealDialogOpen(false)}
             >
               <Thief
-                onSubmit={() => {
-                  // setStealDialogOpen(false);
-                  setDataVersionKey(dataVersionKey() + 1);
-                }}
+                onTheftData={setTab}
                 close={() => setStealDialogOpen(false)}
               />
             </Dialog>
