@@ -54,8 +54,6 @@ export default function App() {
   );
   const [tabsNameOverflow, setTabsNameOverflow] = createSignal(false);
 
-  const [dataVersionKey, setDataVersionKey] = createSignal(0);
-
   createEffect(() => {
     // init if null
     if (typeof apiURL() !== "string") setAPIURL(defaultApiUrl);
@@ -344,7 +342,6 @@ export default function App() {
         )}
       </Main>
       <TemporaryDrawer
-        key={dataVersionKey()}
         open={open()}
         onTheftData={(data) => {
           setInfoOpen(false);

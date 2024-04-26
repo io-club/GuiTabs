@@ -43,7 +43,6 @@ export default function TemporaryDrawer(props: {
   onTheftData: (data: TheftDataEntry) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
-  key: string | number;
 }) {
   const allTagsTag = "all tabs";
   const open = () => props.open;
