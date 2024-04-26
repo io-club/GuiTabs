@@ -21,7 +21,12 @@ import {
 import TemporaryDrawer, { DrawerHeader } from "./sidebar";
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
-import { apiUrlAtom, defaultApiUrl } from "../../state";
+import {
+  apiUrlAtom,
+  currentTabNamesAtom,
+  defaultApiUrl,
+  tabsStoreAtom,
+} from "../../state";
 import MuiAppBar, {
   AppBarProps as MuiAppBarProps,
 } from "@suid/material/AppBar";
@@ -34,12 +39,17 @@ import {
 
 import "./style.css";
 import { TheftDataEntry } from "../../types";
+import { useSearchParams } from "@solidjs/router";
 
 export const drawerWidth = 240;
 export const smallSizeWidth = 800;
 
 export default function App() {
-  const [tab, setTab] = createSignal<TheftDataEntry>();
+  const [params, setParams] = useSearchParams();
+
+  const [currentTabName, setCurrentTabName] = useAtom(currentTabNamesAtom);
+  const tabs = useAtom(tabsStoreAtom)[0];
+
   const [open, setOpen] = createSignal(false);
   const [apiDialogOpen, setApiDialogOpen] = createSignal(false);
   const [infoOpen, setInfoOpen] = createSignal(false);
@@ -55,20 +65,48 @@ export default function App() {
   const [tabsNameOverflow, setTabsNameOverflow] = createSignal(false);
 
   createEffect(() => {
-    // init if null
-    if (typeof apiURL() !== "string") setAPIURL(defaultApiUrl);
+    // get API URL from URL params
+    const searchURL = params["apiURL"];
+    if (searchURL) {
+      setAPIURL(searchURL);
+    } else if (typeof apiURL() !== "string") {
+      // init if null
+      setAPIURL(defaultApiUrl);
+    }
 
     // add CSS variables to root
     const root = document.documentElement;
     root.style.setProperty("--drawer-width", drawerWidth + "px");
   });
 
-  // show the drawer if tabs is empty
   createEffect(() => {
-    if (!tab()) {
-      setTimeout(() => {
-        setOpen(true);
-      }, 225);
+    if (currentTabName().length === 0) {
+    }
+  });
+
+  createEffect(() => {
+    // set URL params on API URL change
+    const apiUrl = apiURL();
+    if (apiUrl && currentTabName().length > 0) {
+      setParams({ apiURL: apiUrl, tabName: currentTabName()[0] });
+    }
+  });
+
+  createEffect(() => {
+    if (currentTabName().length === 0) {
+      // set activate tab on URL params change
+      const searchTab = params["tabName"];
+      if (tabs().length > 0 && searchTab) {
+        const foundTab = tabs().find((t) => t.name === searchTab);
+        if (foundTab) {
+          setCurrentTabName([foundTab.name]);
+        }
+      } else if (!searchTab) {
+        // show the drawer if tabs is empty
+        setTimeout(() => {
+          setOpen(true);
+        }, 225);
+      }
     }
   });
 
@@ -93,6 +131,10 @@ export default function App() {
     console.log(tabsNameBlockWidth, tabHeadingWidth);
 
     setTabsNameOverflow(tabsNameBlockWidth > tabHeadingWidth - 80);
+  };
+
+  const getCurrentTab = (): TheftDataEntry | null => {
+    return tabs().find((t) => t.name === currentTabName()[0]) ?? null;
   };
 
   createEffect(() => {
@@ -233,9 +275,9 @@ export default function App() {
             class={open() && !smallSize() ? "TabHeading Hide" : "TabHeading"}
           >
             <div class={tabsNameOverflow() ? "GuiTabs Overflow" : "GuiTabs"}>
-              <div id="tabsNameBlock">{tab()?.name ?? "GuiTabs"}</div>
+              <div id="tabsNameBlock">{getCurrentTab()?.name ?? "GuiTabs"}</div>
             </div>
-            {tab() && metaButton(tab())}
+            {getCurrentTab() !== null && metaButton(getCurrentTab())}
           </div>
           {
             <Dialog
@@ -243,10 +285,7 @@ export default function App() {
               fullWidth
               onClose={() => setStealDialogOpen(false)}
             >
-              <Thief
-                onTheftData={setTab}
-                close={() => setStealDialogOpen(false)}
-              />
+              <Thief close={() => setStealDialogOpen(false)} />
             </Dialog>
           }
           {
@@ -329,8 +368,8 @@ export default function App() {
         }}
       >
         <DrawerHeader />
-        {tab() ? (
-          mapTab(tab())
+        {getCurrentTab() !== null ? (
+          mapTab(getCurrentTab())
         ) : (
           <img
             src="index.png"
@@ -341,16 +380,7 @@ export default function App() {
           ></img>
         )}
       </Main>
-      <TemporaryDrawer
-        open={open()}
-        onTheftData={(data) => {
-          setInfoOpen(false);
-          setInfoAnchorEl(null);
-          setTab(data);
-          handleResize();
-        }}
-        setOpen={setOpen}
-      />
+      <TemporaryDrawer open={open()} setOpen={setOpen} />
     </Box>
   );
 }

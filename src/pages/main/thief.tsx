@@ -14,10 +14,9 @@ import {
   CircularProgress,
   Alert,
 } from "@suid/material";
-import { useAtom } from "solid-jotai";
-import { apiUrlAtom, tabsStoreAtom } from "../../state";
+import { useAtom, useSetAtom } from "solid-jotai";
+import { apiUrlAtom, currentTabNamesAtom, tabsStoreAtom } from "../../state";
 import { getTheftData } from "../../tabs";
-import { TheftDataEntry } from "../../types";
 
 interface FormValues {
   url: string;
@@ -30,7 +29,6 @@ interface FormValues {
 
 interface FormProps {
   close: () => void;
-  onTheftData: (data: TheftDataEntry) => void;
 }
 
 export function Thief(props: FormProps) {
@@ -49,7 +47,8 @@ export function Thief(props: FormProps) {
 
   const apiURL = useAtom(apiUrlAtom)[0];
 
-  const [_, setTabs] = useAtom(tabsStoreAtom);
+  const setTabs = useSetAtom(tabsStoreAtom);
+  const setCurrentTab = useSetAtom(currentTabNamesAtom);
 
   const handleSubmit = () => {
     setLock(true);
@@ -69,10 +68,7 @@ export function Thief(props: FormProps) {
         } else {
           await getTheftData(apiURL()).then((data) => {
             setTabs(data);
-            const tab = data.find((t) => t.name === submissionName);
-            if (tab) {
-              props.onTheftData(tab);
-            }
+            setCurrentTab([submissionName]);
             props.close();
           });
         }

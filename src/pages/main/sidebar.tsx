@@ -15,10 +15,10 @@ import {
   styled,
 } from "@suid/material";
 import { DrawerProps } from "@suid/material/Drawer";
-import { TheftData, TheftDataEntry } from "../../types";
+import { TheftData } from "../../types";
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
-import { apiUrlAtom, tabsStoreAtom } from "../../state";
+import { apiUrlAtom, currentTabNamesAtom, tabsStoreAtom } from "../../state";
 import {
   ChevronLeftRounded,
   QueueMusicRounded,
@@ -40,7 +40,6 @@ export const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function TemporaryDrawer(props: {
-  onTheftData: (data: TheftDataEntry) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
 }) {
@@ -48,7 +47,7 @@ export default function TemporaryDrawer(props: {
   const open = () => props.open;
 
   const [theftData, setTheftData] = useAtom(tabsStoreAtom);
-  const [selectedTab, setSelectedTab] = createSignal<TheftDataEntry>();
+  const [currentTab, setCurrentTab] = useAtom(currentTabNamesAtom);
   const [searchTerm, setSearchTerm] = createSignal("");
   const [smallSize, setSmallSize] = createSignal(
     window.innerWidth < smallSizeWidth
@@ -132,20 +131,21 @@ export default function TemporaryDrawer(props: {
             </Typography>
           </ListItem>
         )}
-        {filteredTheftData().map((data) => (
+        {filteredTheftData().map((entry) => (
           <ListItem disablePadding>
             <ListItemButton
-              selected={selectedTab() && selectedTab() === data}
+              selected={
+                currentTab().length > 0 && currentTab()[0] === entry.name
+              }
               onClick={() => {
-                setSelectedTab(data);
-                props.onTheftData(data);
+                setCurrentTab([entry.name]);
                 smallSize() && props.setOpen(false);
               }}
             >
               <ListItemIcon sx={{ mr: -2 }}>
                 <QueueMusicRounded />
               </ListItemIcon>
-              <ListItemText primary={data["name"]} />
+              <ListItemText primary={entry.name} />
             </ListItemButton>
           </ListItem>
         ))}

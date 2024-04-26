@@ -15,3 +15,5 @@ export const apiUrlAtom = atomWithStorage(
 );
 
 export const tabsStoreAtom = atom<TheftData>([]);
+
+export const currentTabNamesAtom = atom<string[]>([]);
