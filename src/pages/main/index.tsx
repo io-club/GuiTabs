@@ -67,8 +67,11 @@ export default function App() {
   const [addingAPI, setAddingAPI] = createSignal<string>(searchURL);
 
   // init if null
-  if (typeof apiURL() !== "string" || apiURL().length === 0) {
-    enableAPI(defaultApiUrl, [api(), setAPI], [apiURL(), setAPIURL]);
+  if (typeof apiURL() !== "string") {
+    setAPIURL(defaultApiUrl);
+  }
+  if (typeof api() !== "object") {
+    setAPI(JSON.stringify([apiURL()]));
   }
 
   // add CSS variables to root

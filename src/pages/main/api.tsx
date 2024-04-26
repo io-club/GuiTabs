@@ -77,7 +77,7 @@ export function APIManagerDialog(props: APIManagerDialogProps) {
             "margin-top": "1rem",
           }}
         >
-          {(JSON.parse(api()) as string[]).map((url) => (
+          {(JSON.parse(api() ?? "[]") as string[]).map((url) => (
             <div
               style={{
                 display: "flex",
