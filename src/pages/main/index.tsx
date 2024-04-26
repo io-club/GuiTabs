@@ -33,7 +33,7 @@ import {
 } from "@suid/icons-material";
 
 import "./style.css";
-import { TheftData, TheftDataEntry } from "../../types";
+import { TheftDataEntry } from "../../types";
 
 export const drawerWidth = 240;
 export const smallSizeWidth = 800;
@@ -135,25 +135,25 @@ export default function App() {
   );
 
   const mapTab = (content: TheftDataEntry) => {
-      return content.content.map((e, index) => {
-        return (
-          <>
-            <p>
-              第 {index + 1} 页，共 {content.pages} 页 👇
-            </p>
-            <img
-              src={`${apiURL()}${content.href}/${e}`}
-              style={{
-                width: `auto`,
-                height: `auto`,
-                "max-width": `100%`,
-                "max-height": `100%`,
-                filter: content.meta?.invert ? "invert(1)" : "none",
-              }}
-            ></img>
-          </>
-        );
-      });
+    return content.content.map((e, index) => {
+      return (
+        <>
+          <p>
+            第 {index + 1} 页，共 {content.pages} 页 👇
+          </p>
+          <img
+            src={`${apiURL()}${content.href}/${e}`}
+            style={{
+              width: `auto`,
+              height: `auto`,
+              "max-width": `100%`,
+              "max-height": `100%`,
+              filter: content.meta?.invert ? "invert(1)" : "none",
+            }}
+          ></img>
+        </>
+      );
+    });
   };
 
   const metaButton = (tab: TheftDataEntry) => {

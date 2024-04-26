@@ -15,10 +15,7 @@ import {
   styled,
 } from "@suid/material";
 import { DrawerProps } from "@suid/material/Drawer";
-import {
-  TheftData,
-  TheftDataEntry,
-} from "../../types";
+import { TheftData, TheftDataEntry } from "../../types";
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom from "../../state";
@@ -58,8 +55,9 @@ export default function TemporaryDrawer(props: {
     window.innerWidth < smallSizeWidth
   );
 
-  const [availableTags, setAvailableTags] =
-    createSignal<Set<string>>(new Set([allTagsTag]));
+  const [availableTags, setAvailableTags] = createSignal<Set<string>>(
+    new Set([allTagsTag])
+  );
 
   const apiURL = useAtom(apiUrlAtom)[0];
 
@@ -138,10 +136,7 @@ export default function TemporaryDrawer(props: {
         {filteredTheftData().map((data) => (
           <ListItem disablePadding>
             <ListItemButton
-              selected={
-                selectedTab() &&
-                selectedTab() === data
-              }
+              selected={selectedTab() && selectedTab() === data}
               onClick={() => {
                 setSelectedTab(data);
                 props.onTheftData(data);
