@@ -16,11 +16,8 @@ import {
 } from "@suid/material";
 import { DrawerProps } from "@suid/material/Drawer";
 import {
-  ListItemTab,
-  TabMap,
   TheftData,
   TheftDataEntry,
-  UnionTabs,
 } from "../../types";
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
@@ -46,8 +43,6 @@ export const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function TemporaryDrawer(props: {
-  tabs: TabMap;
-  onTabSelect: (title: string) => void;
   onTheftData: (data: TheftDataEntry) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -55,35 +50,16 @@ export default function TemporaryDrawer(props: {
 }) {
   const allTagsTag = "all tabs";
   const open = () => props.open;
-  const originTabs: ListItemTab[] = Object.entries(props.tabs).map(
-    ([key, value]) => {
-      let tags = [allTagsTag];
-      if (Array.isArray(value.tag)) {
-        tags = [...tags, ...value.tag];
-      } else if (value.tag) {
-        tags = [value.tag, ...tags];
-      }
-      return {
-        ...value,
-        key: key,
-        tags: tags,
-        selected: value.tag ? false : true,
-      };
-    }
-  );
 
   const [theftData, setTheftData] = createSignal<TheftData>([]);
-  const [selectedTab, setSelectedTab] = createSignal<UnionTabs>();
+  const [selectedTab, setSelectedTab] = createSignal<TheftDataEntry>();
   const [searchTerm, setSearchTerm] = createSignal("");
   const [smallSize, setSmallSize] = createSignal(
     window.innerWidth < smallSizeWidth
   );
 
-  let tagsFromOriginData = new Set<string>(
-    originTabs.map((entry) => entry.tags).flat()
-  );
   const [availableTags, setAvailableTags] =
-    createSignal<Set<string>>(tagsFromOriginData);
+    createSignal<Set<string>>(new Set([allTagsTag]));
 
   const apiURL = useAtom(apiUrlAtom)[0];
 
@@ -114,16 +90,6 @@ export default function TemporaryDrawer(props: {
 
   let [selectedTags, setSelectedTags] = createSignal([allTagsTag]);
 
-  let filteredTabs = () =>
-    originTabs.filter(
-      (tab) =>
-        tab.tags.some((tag) => selectedTags().includes(tag)) &&
-        tab.name
-          .toLowerCase()
-          .replace(" ", "")
-          .includes(searchTerm().toLowerCase().replace(" ", ""))
-    );
-
   let filteredTheftData = () =>
     theftData().filter(
       (data) =>
@@ -153,7 +119,7 @@ export default function TemporaryDrawer(props: {
     >
       <List disablePadding>
         {/* tab list */}
-        {filteredTabs().length === 0 && filteredTheftData().length === 0 && (
+        {filteredTheftData().length === 0 && (
           <ListItem>
             <Typography
               variant="h5"
@@ -169,37 +135,15 @@ export default function TemporaryDrawer(props: {
             </Typography>
           </ListItem>
         )}
-        {filteredTabs().map((tab) => (
-          <ListItem disablePadding>
-            <ListItemButton
-              selected={
-                selectedTab() &&
-                selectedTab().type === "preset" &&
-                selectedTab().data === tab
-              }
-              onClick={() => {
-                setSelectedTab({ type: "preset", data: tab });
-                props.onTabSelect(tab.key);
-                smallSize() && props.setOpen(false);
-              }}
-            >
-              <ListItemIcon sx={{ mr: -2 }}>
-                <QueueMusicRounded />
-              </ListItemIcon>
-              <ListItemText primary={tab["name"]} />
-            </ListItemButton>
-          </ListItem>
-        ))}
         {filteredTheftData().map((data) => (
           <ListItem disablePadding>
             <ListItemButton
               selected={
                 selectedTab() &&
-                selectedTab().type === "theft" &&
-                selectedTab().data === data
+                selectedTab() === data
               }
               onClick={() => {
-                setSelectedTab({ type: "theft", data: data });
+                setSelectedTab(data);
                 props.onTheftData(data);
                 smallSize() && props.setOpen(false);
               }}

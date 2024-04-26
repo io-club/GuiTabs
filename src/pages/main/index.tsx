@@ -20,8 +20,6 @@ import {
 } from "@suid/material";
 import TemporaryDrawer, { DrawerHeader } from "./sidebar";
 import { createEffect, createSignal, onCleanup } from "solid-js";
-import { Tabs as tabsData } from "../../data";
-import { UnionTabs } from "../../types";
 import { useAtom } from "solid-jotai";
 import apiUrlAtom, { defaultApiUrl } from "../../state";
 import MuiAppBar, {
@@ -35,12 +33,13 @@ import {
 } from "@suid/icons-material";
 
 import "./style.css";
+import { TheftData, TheftDataEntry } from "../../types";
 
 export const drawerWidth = 240;
 export const smallSizeWidth = 800;
 
 export default function App() {
-  const [tabs, setTabs] = createSignal<UnionTabs>();
+  const [tab, setTab] = createSignal<TheftDataEntry>();
   const [open, setOpen] = createSignal(false);
   const [apiDialogOpen, setApiDialogOpen] = createSignal(false);
   const [infoOpen, setInfoOpen] = createSignal(false);
@@ -68,7 +67,7 @@ export default function App() {
 
   // show the drawer if tabs is empty
   createEffect(() => {
-    if (!tabs()) {
+    if (!tab()) {
       setTimeout(() => {
         setOpen(true);
       }, 225);
@@ -135,57 +134,30 @@ export default function App() {
     })
   );
 
-  const mapTabs = (content: UnionTabs) => {
-    if (content.type === "preset") {
-      return content.data.url.map((e, index) => {
-        switch (content.data.type) {
-          case "pdf":
-            return <a>pdf gun !</a>;
-          default:
-            return (
-              <>
-                <p>第 {index + 1} 页 👇</p>
-                <img
-                  src={`${e}`}
-                  style={{
-                    width: `auto`,
-                    height: `auto`,
-                    "max-width": `100%`,
-                    "max-height": `100%`,
-                  }}
-                ></img>
-              </>
-            );
-        }
-      });
-    } else if (content.type === "theft") {
-      return content.data.content.map((e, index) => {
+  const mapTab = (content: TheftDataEntry) => {
+      return content.content.map((e, index) => {
         return (
           <>
             <p>
-              第 {index + 1} 页，共 {content.data.pages} 页 👇
+              第 {index + 1} 页，共 {content.pages} 页 👇
             </p>
             <img
-              src={`${apiURL()}${content.data.href}/${e}`}
+              src={`${apiURL()}${content.href}/${e}`}
               style={{
                 width: `auto`,
                 height: `auto`,
                 "max-width": `100%`,
                 "max-height": `100%`,
-                filter: content.data.meta?.invert ? "invert(1)" : "none",
+                filter: content.meta?.invert ? "invert(1)" : "none",
               }}
             ></img>
           </>
         );
       });
-    }
   };
 
-  const metaButton = (tab: UnionTabs) => {
-    if (tab.type !== "theft") {
-      return;
-    }
-    const meta = tab.data.meta;
+  const metaButton = (tab: TheftDataEntry) => {
+    const meta = tab.meta;
     if (!meta) {
       return;
     }
@@ -263,9 +235,9 @@ export default function App() {
             class={open() && !smallSize() ? "TabHeading Hide" : "TabHeading"}
           >
             <div class={tabsNameOverflow() ? "GuiTabs Overflow" : "GuiTabs"}>
-              <div id="tabsNameBlock">{tabs()?.data?.name ?? "GuiTabs"}</div>
+              <div id="tabsNameBlock">{tab()?.name ?? "GuiTabs"}</div>
             </div>
-            {tabs() && metaButton(tabs())}
+            {tab() && metaButton(tab())}
           </div>
           {
             <Dialog
@@ -362,8 +334,8 @@ export default function App() {
         }}
       >
         <DrawerHeader />
-        {tabs() ? (
-          mapTabs(tabs())
+        {tab() ? (
+          mapTab(tab())
         ) : (
           <img
             src="index.png"
@@ -376,18 +348,11 @@ export default function App() {
       </Main>
       <TemporaryDrawer
         key={dataVersionKey()}
-        tabs={tabsData}
         open={open()}
-        onTabSelect={(title) => {
-          setInfoOpen(false);
-          setInfoAnchorEl(null);
-          setTabs({ type: "preset", data: tabsData[title] });
-          handleResize();
-        }}
         onTheftData={(data) => {
           setInfoOpen(false);
           setInfoAnchorEl(null);
-          setTabs({ type: "theft", data: data });
+          setTab(data);
           handleResize();
         }}
         setOpen={setOpen}
