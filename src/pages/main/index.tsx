@@ -4,16 +4,12 @@ import {
   Button,
   CssBaseline,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   IconButton,
   List,
   ListItem,
   ListItemText,
   Menu,
-  TextField,
   Theme,
   Toolbar,
   styled,
@@ -22,9 +18,11 @@ import TemporaryDrawer, { DrawerHeader } from "./sidebar";
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import { useAtom } from "solid-jotai";
 import {
+  apiStorageAtom,
   apiUrlAtom,
   currentTabNamesAtom,
   defaultApiUrl,
+  enableAPI,
   tabsStoreAtom,
 } from "../../state";
 import MuiAppBar, {
@@ -40,49 +38,51 @@ import {
 import "./style.css";
 import { TheftDataEntry } from "../../types";
 import { useSearchParams } from "@solidjs/router";
+import { APIManagerDialog } from "./api";
 
 export const drawerWidth = 240;
 export const smallSizeWidth = 800;
 
 export default function App() {
   const [params, setParams] = useSearchParams();
+  const searchURL = params["apiURL"];
 
   const [currentTabName, setCurrentTabName] = useAtom(currentTabNamesAtom);
   const tabs = useAtom(tabsStoreAtom)[0];
 
   const [open, setOpen] = createSignal(false);
-  const [apiDialogOpen, setApiDialogOpen] = createSignal(false);
+  const [apiDialogOpen, setApiDialogOpen] = createSignal(!!searchURL);
   const [infoOpen, setInfoOpen] = createSignal(false);
   const [infoAnchorEl, setInfoAnchorEl] = createSignal<HTMLElement | null>(
     null
   );
   const [stealDialogOpen, setStealDialogOpen] = createSignal(false);
+  const [api, setAPI] = useAtom(apiStorageAtom);
   const [apiURL, setAPIURL] = useAtom(apiUrlAtom);
-  const [internalURL, setInternalURL] = createSignal("");
   const [smallSize, setSmallSize] = createSignal(
     window.innerWidth < smallSizeWidth
   );
   const [tabsNameOverflow, setTabsNameOverflow] = createSignal(false);
 
-  createEffect(() => {
-    // get API URL from URL params
-    const searchURL = params["apiURL"];
-    if (searchURL) {
-      setAPIURL(searchURL);
-    } else if (typeof apiURL() !== "string") {
-      // init if null
-      setAPIURL(defaultApiUrl);
-    }
+  const [addingAPI, setAddingAPI] = createSignal<string>(searchURL);
 
-    // add CSS variables to root
-    const root = document.documentElement;
-    root.style.setProperty("--drawer-width", drawerWidth + "px");
-  });
+  // init if null
+  if (typeof apiURL() !== "string" || apiURL().length === 0) {
+    enableAPI(defaultApiUrl, [api(), setAPI], [apiURL(), setAPIURL]);
+  }
 
-  createEffect(() => {
-    if (currentTabName().length === 0) {
-    }
-  });
+  // add CSS variables to root
+  const root = document.documentElement;
+  root.style.setProperty("--drawer-width", drawerWidth + "px");
+
+  // get API URL from URL params
+  if (!searchURL || apiURL() === searchURL) {
+    setAddingAPI(undefined);
+    setApiDialogOpen(false);
+  } else {
+    setAddingAPI(searchURL);
+    setApiDialogOpen(true);
+  }
 
   createEffect(() => {
     // set URL params on API URL change
@@ -127,8 +127,6 @@ export default function App() {
     const tabsNameBlockWidth = document
       .getElementById("tabsNameBlock")
       .getBoundingClientRect().width;
-
-    console.log(tabsNameBlockWidth, tabHeadingWidth);
 
     setTabsNameOverflow(tabsNameBlockWidth > tabHeadingWidth - 80);
   };
@@ -289,35 +287,10 @@ export default function App() {
             </Dialog>
           }
           {
-            <Dialog
-              open={apiDialogOpen()}
-              fullWidth
-              onClose={() => setApiDialogOpen(false)}
-            >
-              <DialogTitle>设置 API URL</DialogTitle>
-              <DialogContent>
-                <TextField
-                  label="API URL"
-                  value={internalURL()}
-                  onChange={(e) => setInternalURL(e.target.value)}
-                  fullWidth
-                  style={{
-                    "margin-top": "0.5em",
-                  }}
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setApiDialogOpen(false)}>取消</Button>
-                <Button
-                  onClick={() => {
-                    setAPIURL(internalURL());
-                    setApiDialogOpen(false);
-                  }}
-                >
-                  保存
-                </Button>
-              </DialogActions>
-            </Dialog>
+            <APIManagerDialog
+              openHook={[apiDialogOpen(), setApiDialogOpen]}
+              adding={addingAPI()}
+            />
           }
           <div
             id="headingButtons"
@@ -348,7 +321,6 @@ export default function App() {
               size="small"
               onClick={() => {
                 setOpen(false);
-                setInternalURL(apiURL());
                 setApiDialogOpen(true);
               }}
             >
