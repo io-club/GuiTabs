@@ -74,17 +74,19 @@ export default function App() {
     setAPI(JSON.stringify([apiURL()]));
   }
 
-  // add CSS variables to root
-  const root = document.documentElement;
-  root.style.setProperty("--drawer-width", drawerWidth + "px");
-
   // get API URL from URL params
-  if (!searchURL || apiURL() === searchURL) {
+  if (!searchURL) {
     setAddingAPI(undefined);
     setApiDialogOpen(false);
   } else {
-    setAddingAPI(searchURL);
-    setApiDialogOpen(true);
+    if (!(JSON.parse(api() ?? "[]") as string[]).includes(searchURL)) {
+      setAddingAPI(searchURL);
+      setApiDialogOpen(true);
+    } else {
+      setAddingAPI(undefined);
+      setApiDialogOpen(false);
+      setAPIURL(searchURL);
+    }
   }
 
   createEffect(() => {
@@ -96,6 +98,10 @@ export default function App() {
   });
 
   createEffect(() => {
+    // add CSS variables to root
+    const root = document.documentElement;
+    root.style.setProperty("--drawer-width", drawerWidth + "px");
+
     if (currentTabName().length === 0) {
       // set activate tab on URL params change
       const searchTab = params["tabName"];
