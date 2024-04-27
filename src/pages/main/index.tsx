@@ -70,7 +70,7 @@ export default function App() {
   if (typeof apiURL() !== "string") {
     setAPIURL(defaultApiUrl);
   }
-  if (typeof api() !== "object") {
+  if (typeof api() !== "string") {
     setAPI(JSON.stringify([apiURL()]));
   }
 
