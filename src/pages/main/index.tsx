@@ -196,23 +196,18 @@ export default function App() {
   );
 
   const mapTab = (content: TheftDataEntry) => {
-    return content.content.map((e, index) => {
+    return content.content.map((e) => {
       return (
-        <>
-          <p>
-            第 {index + 1} 页，共 {content.pages} 页 👇
-          </p>
-          <img
-            src={`${apiURL()}${content.href}/${e}`}
-            style={{
-              width: `auto`,
-              height: `auto`,
-              "max-width": `100%`,
-              "max-height": `100%`,
-              filter: content.meta?.invert ? "invert(1)" : "none",
-            }}
-          ></img>
-        </>
+        <img
+          src={`${apiURL()}${content.href}/${e}`}
+          style={{
+            width: `auto`,
+            height: `auto`,
+            "max-width": `100%`,
+            "max-height": `100%`,
+            filter: content.meta?.invert ? "invert(1)" : "none",
+          }}
+        ></img>
       );
     });
   };
