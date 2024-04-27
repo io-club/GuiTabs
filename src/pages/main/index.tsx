@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Breakpoint,
   Button,
@@ -10,6 +11,7 @@ import {
   ListItem,
   ListItemText,
   Menu,
+  Popover,
   Theme,
   Toolbar,
   styled,
@@ -22,7 +24,6 @@ import {
   apiUrlAtom,
   currentTabNamesAtom,
   defaultApiUrl,
-  enableAPI,
   tabsStoreAtom,
 } from "../../state";
 import MuiAppBar, {
@@ -51,7 +52,7 @@ export default function App() {
   const tabs = useAtom(tabsStoreAtom)[0];
 
   const [open, setOpen] = createSignal(false);
-  const [apiDialogOpen, setApiDialogOpen] = createSignal(!!searchURL);
+  const [apiDialogOpen, setApiDialogOpen] = createSignal(false);
   const [infoOpen, setInfoOpen] = createSignal(false);
   const [infoAnchorEl, setInfoAnchorEl] = createSignal<HTMLElement | null>(
     null
@@ -59,12 +60,15 @@ export default function App() {
   const [stealDialogOpen, setStealDialogOpen] = createSignal(false);
   const [api, setAPI] = useAtom(apiStorageAtom);
   const [apiURL, setAPIURL] = useAtom(apiUrlAtom);
+  const [apiURLChanged, setAPIURLChanged] = createSignal(false);
+  const [apiButtonAnchorEl, setAPIButtonAnchorEl] =
+    createSignal<HTMLElement | null>(null);
   const [smallSize, setSmallSize] = createSignal(
     window.innerWidth < smallSizeWidth
   );
   const [tabsNameOverflow, setTabsNameOverflow] = createSignal(false);
 
-  const [addingAPI, setAddingAPI] = createSignal<string>(searchURL);
+  const [addingAPI, setAddingAPI] = createSignal<string>("");
 
   // init if null
   if (typeof apiURL() !== "string") {
@@ -79,13 +83,21 @@ export default function App() {
     setAddingAPI(undefined);
     setApiDialogOpen(false);
   } else {
-    if (!(JSON.parse(api() ?? "[]") as string[]).includes(searchURL)) {
+    const parsedAPIURLs = JSON.parse(api() ?? "[]") as string[];
+
+    if (!parsedAPIURLs.includes(searchURL)) {
       setAddingAPI(searchURL);
       setApiDialogOpen(true);
     } else {
       setAddingAPI(undefined);
       setApiDialogOpen(false);
-      setAPIURL(searchURL);
+      if (apiURL() !== searchURL) {
+        setAPIURL(searchURL);
+        setAPIURLChanged(true);
+        setTimeout(() => {
+          setAPIURLChanged(false);
+        }, 2000);
+      }
     }
   }
 
@@ -101,6 +113,8 @@ export default function App() {
     // add CSS variables to root
     const root = document.documentElement;
     root.style.setProperty("--drawer-width", drawerWidth + "px");
+
+    setAPIButtonAnchorEl(document.getElementById("apiButton"));
 
     if (currentTabName().length === 0) {
       // set activate tab on URL params change
@@ -326,6 +340,7 @@ export default function App() {
               Steal
             </Button>
             <Button
+              id="apiButton"
               variant="text"
               size="small"
               onClick={() => {
@@ -335,6 +350,14 @@ export default function App() {
             >
               API
             </Button>
+            <Popover
+              open={apiURLChanged()}
+              anchorEl={apiButtonAnchorEl()}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+              elevation={1}
+            >
+              <Alert>API URL 已更改</Alert>
+            </Popover>
           </div>
         </Toolbar>
       </AppBar>

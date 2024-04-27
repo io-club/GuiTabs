@@ -17,7 +17,10 @@ export const apiUrlAtom = atomWithStorage(
 export const apiStorageAtom = atomWithStorage(
   "apiStorage",
   `["${defaultApiUrl}"]`,
-  localStorage
+  localStorage,
+  {
+    getOnInit: true,
+  }
 );
 export const tabsStoreAtom = atom<TheftData>([]);
 
