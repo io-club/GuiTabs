@@ -50,6 +50,14 @@ export function Thief(props: FormProps) {
   const setTabs = useSetAtom(tabsStoreAtom);
   const setCurrentTab = useSetAtom(currentTabNamesAtom);
 
+  const modeRelativeSettings = () => {
+    if (values().mode === 4) {
+      setValues({ ...values(), similarity: 0.4 });
+    } else {
+      setValues({ ...values(), similarity: 0.85 });
+    }
+  };
+
   const handleSubmit = () => {
     setLock(true);
     let submissionName = values().name;
@@ -108,7 +116,10 @@ export function Thief(props: FormProps) {
             <Select
               label="模式"
               value={values().mode}
-              onChange={(e) => setValues({ ...values(), mode: e.target.value })}
+              onChange={(e) => {
+                setValues({ ...values(), mode: e.target.value });
+                modeRelativeSettings();
+              }}
               defaultValue={3}
             >
               <MenuItem value={1}>均值</MenuItem>
