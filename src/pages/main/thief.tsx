@@ -114,6 +114,7 @@ export function Thief(props: FormProps) {
               <MenuItem value={1}>均值</MenuItem>
               <MenuItem value={2}>方差</MenuItem>
               <MenuItem value={3}>色彩</MenuItem>
+              <MenuItem value={4}>无裁切</MenuItem>
             </Select>
           </FormControl>
           <FormControl>
