@@ -64,7 +64,7 @@ export function APIManagerDialog(props: APIManagerDialogProps) {
             }}
             variant="contained"
             size="small"
-            sx={{ height: "3em" }}
+            sx={{ height: "40px" }}
             disabled={internalURL() === ""}
           >
             增加
