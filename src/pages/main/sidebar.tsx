@@ -75,7 +75,7 @@ export default function TemporaryDrawer(props: {
     const response = await fetch(apiURL() + "/list");
     const data = (await response.json()) as TheftData;
     setTheftData(data);
-    let newTags = new Set<string>(availableTags());
+    let newTags = new Set<string>([allTagsTag]);
     data.forEach((entry) => {
       if (entry.meta?.tags) {
         entry.meta.tags.forEach((tag) => newTags.add(tag));
