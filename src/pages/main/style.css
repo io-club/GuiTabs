@@ -1,12 +1,19 @@
 .TagsBox {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
   width: calc(var(--drawer-width) - 32px);
   padding: 16px 0;
   margin: 0 auto;
   gap: 8px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  overflow: hidden;
+  max-height: min(30vh, 10em);
+  overflow: scroll;
 }
 
 .Search {
@@ -98,7 +105,11 @@
   top: 0;
   width: 1em;
   height: 100%;
-  background: linear-gradient(90deg, hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 1));
+  background: linear-gradient(
+    90deg,
+    hsla(0, 0%, 100%, 0),
+    hsla(0, 0%, 100%, 1)
+  );
   opacity: 0;
   transition: 225ms;
 }

@@ -11,7 +11,7 @@ export const apiUrlAtom = atomWithStorage(
   localStorage,
   {
     getOnInit: true,
-  }
+  },
 );
 
 export const apiStorageAtom = atomWithStorage(
@@ -20,7 +20,7 @@ export const apiStorageAtom = atomWithStorage(
   localStorage,
   {
     getOnInit: true,
-  }
+  },
 );
 export const tabsStoreAtom = atom<TheftData>([]);
 
@@ -35,7 +35,7 @@ export const currentTabNamesAtom = atom<string[]>([]);
 export function enableAPI(
   url: string,
   storage: [string, (url: string) => void],
-  api: [string, (api: string) => void]
+  api: [string, (api: string) => void],
 ) {
   const storageArray = JSON.parse(storage[0]) as string[];
   if (!storageArray.includes(url)) {

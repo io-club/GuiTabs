@@ -50,11 +50,11 @@ export default function TemporaryDrawer(props: {
   const [currentTab, setCurrentTab] = useAtom(currentTabNamesAtom);
   const [searchTerm, setSearchTerm] = createSignal("");
   const [smallSize, setSmallSize] = createSignal(
-    window.innerWidth < smallSizeWidth
+    window.innerWidth < smallSizeWidth,
   );
 
   const [availableTags, setAvailableTags] = createSignal<Set<string>>(
-    new Set([allTagsTag])
+    new Set([allTagsTag]),
   );
 
   const apiURL = useAtom(apiUrlAtom)[0];
@@ -89,9 +89,9 @@ export default function TemporaryDrawer(props: {
   let filteredTheftData = () =>
     theftData().filter(
       (data) =>
-        (data.meta?.tags ?? [])
-          .concat([allTagsTag])
-          .some((tag) => selectedTags().includes(tag)) &&
+        selectedTags().every((tag) => {
+          return (data.meta?.tags ?? []).concat(allTagsTag).includes(tag);
+        }) &&
         (data.name
           .toLowerCase()
           .replace(" ", "")
@@ -103,7 +103,7 @@ export default function TemporaryDrawer(props: {
           (data.meta?.url ?? "")
             .toLowerCase()
             .replace(" ", "")
-            .includes(searchTerm().toLowerCase().replace(" ", "")))
+            .includes(searchTerm().toLowerCase().replace(" ", ""))),
     );
 
   const list = (anchor: Anchor) => (

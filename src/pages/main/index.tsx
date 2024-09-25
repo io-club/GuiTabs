@@ -55,7 +55,7 @@ export default function App() {
   const [apiDialogOpen, setApiDialogOpen] = createSignal(false);
   const [infoOpen, setInfoOpen] = createSignal(false);
   const [infoAnchorEl, setInfoAnchorEl] = createSignal<HTMLElement | null>(
-    null
+    null,
   );
   const [stealDialogOpen, setStealDialogOpen] = createSignal(false);
   const [api, setAPI] = useAtom(apiStorageAtom);
@@ -64,7 +64,7 @@ export default function App() {
   const [apiButtonAnchorEl, setAPIButtonAnchorEl] =
     createSignal<HTMLElement | null>(null);
   const [smallSize, setSmallSize] = createSignal(
-    window.innerWidth < smallSizeWidth
+    window.innerWidth < smallSizeWidth,
   );
   const [tabsNameOverflow, setTabsNameOverflow] = createSignal(false);
 
@@ -144,7 +144,7 @@ export default function App() {
     const root = document.documentElement;
     root.style.setProperty(
       "--tab-heading-width",
-      tabHeadingWidth.toString() + "px"
+      tabHeadingWidth.toString() + "px",
     );
 
     const tabsNameBlockWidth = document
@@ -192,7 +192,7 @@ export default function App() {
       }),
       boxShadow: "none",
       borderBottom: `1px solid ${theme.palette.divider}`,
-    })
+    }),
   );
 
   const mapTab = (content: TheftDataEntry) => {
