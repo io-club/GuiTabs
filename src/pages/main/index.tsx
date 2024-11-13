@@ -120,7 +120,7 @@ export default function App() {
 
     setAPIButtonAnchorEl(document.getElementById("apiButton"));
 
-    if (currentTabName().length === 0) {
+    if (currentTabName().length === 0 && (params["tabName"] ?? '').length > 0) {
       // set activate tab on URL params change
       const searchTab = mapSheetString(params["tabName"]).name;
       if (tabs().length > 0 && searchTab) {
