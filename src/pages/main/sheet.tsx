@@ -13,7 +13,10 @@ export default function ContentViewer() {
     const response = (
       await fetch(apiURL() + "/sheet/" + currentTabName())
     ).json();
-    const data = (await response) as TheftDataEntry;
+    const data = {
+      ...(await response),
+      href: currentTabName(),
+    } as TheftDataEntry;
     console.log(await response);
     setCurrentTab(data);
   }, [currentTabName(), apiURL()]);
@@ -21,7 +24,7 @@ export default function ContentViewer() {
   const mapTab = (content: TheftDataEntry) => {
     return content.content.map((e) => (
       <img
-        src={`${apiURL()}/${content.name}/${e}`}
+        src={`${apiURL()}/${content.href}/${e}`}
         style={{
           width: "auto",
           height: "auto",

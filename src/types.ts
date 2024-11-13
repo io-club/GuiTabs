@@ -12,6 +12,7 @@ export type TheftMeta = {
 
 export type TheftDataEntry = {
   name: string;
+  href: string;
   pages: number;
   content: string[];
   meta?: TheftMeta;
