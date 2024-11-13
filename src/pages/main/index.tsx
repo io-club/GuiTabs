@@ -120,9 +120,12 @@ export default function App() {
 
     setAPIButtonAnchorEl(document.getElementById("apiButton"));
 
-    if (currentTabName().length === 0 && (params["tabName"] ?? '').length > 0) {
+    if (currentTabName().length === 0) {
       // set activate tab on URL params change
-      const searchTab = mapSheetString(params["tabName"]).name;
+      const searchTab =
+        (params["tabName"] ?? "").length > 0
+          ? mapSheetString(params["tabName"]).name
+          : undefined;
       if (tabs().length > 0 && searchTab) {
         const foundTab = tabs().find((t) => t.name === searchTab);
         if (foundTab) {
@@ -194,23 +197,6 @@ export default function App() {
       borderBottom: `1px solid ${theme.palette.divider}`,
     }),
   );
-
-  const mapTab = (content: TheftDataEntry) => {
-    return content.content.map((e) => {
-      return (
-        <img
-          src={`${apiURL()}${content.href}/${e}`}
-          style={{
-            width: `auto`,
-            height: `auto`,
-            "max-width": `100%`,
-            "max-height": `100%`,
-            filter: content.meta?.invert ? "invert(1)" : "none",
-          }}
-        ></img>
-      );
-    });
-  };
 
   const metaButton = (tab: TheftDataEntry) => {
     const meta = tab.meta;
