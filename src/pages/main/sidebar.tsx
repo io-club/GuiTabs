@@ -27,6 +27,7 @@ import {
 
 import "./style.css";
 import { drawerWidth, smallSizeWidth } from ".";
+import { mapSheetString } from "../../tabs";
 
 type Anchor = NonNullable<DrawerProps["anchor"]>;
 
@@ -73,12 +74,17 @@ export default function TemporaryDrawer(props: {
 
   createEffect(async () => {
     const response = await fetch(apiURL() + "/list");
-    const data = (await response.json()) as TheftData;
+    const data = ((await response.json()) as string[]).map(
+      mapSheetString,
+    ) as TheftData;
+
+    console.log(data);
+
     setTheftData(data);
     let newTags = new Set<string>([allTagsTag]);
     data.forEach((entry) => {
-      if (entry.meta?.tags) {
-        entry.meta.tags.forEach((tag) => newTags.add(tag));
+      if (entry.tags) {
+        entry.tags.forEach((tag) => newTags.add(tag));
       }
     });
     setAvailableTags(newTags);
@@ -90,17 +96,13 @@ export default function TemporaryDrawer(props: {
     theftData().filter(
       (data) =>
         selectedTags().every((tag) => {
-          return (data.meta?.tags ?? []).concat(allTagsTag).includes(tag);
+          return (data.tags ?? []).concat(allTagsTag).includes(tag);
         }) &&
         (data.name
           .toLowerCase()
           .replace(" ", "")
           .includes(searchTerm().toLowerCase().replace(" ", "")) ||
-          (data.meta?.name ?? "")
-            .toLowerCase()
-            .replace(" ", "")
-            .includes(searchTerm().toLowerCase().replace(" ", "")) ||
-          (data.meta?.url ?? "")
+          (data.name ?? "")
             .toLowerCase()
             .replace(" ", "")
             .includes(searchTerm().toLowerCase().replace(" ", ""))),
@@ -135,10 +137,10 @@ export default function TemporaryDrawer(props: {
           <ListItem disablePadding>
             <ListItemButton
               selected={
-                currentTab().length > 0 && currentTab()[0] === entry.name
+                currentTab().length > 0 && currentTab()[0] === entry.href
               }
               onClick={() => {
-                setCurrentTab([entry.name]);
+                setCurrentTab([entry.href]);
                 smallSize() && props.setOpen(false);
               }}
             >

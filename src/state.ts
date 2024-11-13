@@ -1,5 +1,5 @@
 import { atom } from "solid-jotai";
-import { TheftData } from "./types";
+import { TheftData, TheftDataEntry, TheftMeta } from "./types";
 import { atomWithStorage } from "jotai/vanilla/utils";
 
 export const defaultApiUrl = "https://c.rcex.live:37898";
@@ -25,6 +25,8 @@ export const apiStorageAtom = atomWithStorage(
 export const tabsStoreAtom = atom<TheftData>([]);
 
 export const currentTabNamesAtom = atom<string[]>([]);
+
+export const currentTabAtom = atom<TheftDataEntry | false>(false);
 
 /**
  * Enables an API by adding its URL to the storage array and calling the API function.

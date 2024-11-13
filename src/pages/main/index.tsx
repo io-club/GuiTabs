@@ -18,10 +18,11 @@ import {
 } from "@suid/material";
 import TemporaryDrawer, { DrawerHeader } from "./sidebar";
 import { createEffect, createSignal, onCleanup } from "solid-js";
-import { useAtom } from "solid-jotai";
+import { useAtom, useAtomValue } from "solid-jotai";
 import {
   apiStorageAtom,
   apiUrlAtom,
+  currentTabAtom,
   currentTabNamesAtom,
   defaultApiUrl,
   tabsStoreAtom,
@@ -37,9 +38,11 @@ import {
 } from "@suid/icons-material";
 
 import "./style.css";
-import { TheftDataEntry } from "../../types";
+import type { TheftDataEntry } from "../../types";
 import { useSearchParams } from "@solidjs/router";
 import { APIManagerDialog } from "./api";
+import ContentViewer from "./sheet";
+import { mapSheetString } from "../../tabs";
 
 export const drawerWidth = 240;
 export const smallSizeWidth = 800;
@@ -49,6 +52,7 @@ export default function App() {
   const searchURL = params["apiURL"];
 
   const [currentTabName, setCurrentTabName] = useAtom(currentTabNamesAtom);
+  const currentTab = useAtomValue(currentTabAtom);
   const tabs = useAtom(tabsStoreAtom)[0];
 
   const [open, setOpen] = createSignal(false);
@@ -118,11 +122,11 @@ export default function App() {
 
     if (currentTabName().length === 0) {
       // set activate tab on URL params change
-      const searchTab = params["tabName"];
+      const searchTab = mapSheetString(params["tabName"]).name;
       if (tabs().length > 0 && searchTab) {
         const foundTab = tabs().find((t) => t.name === searchTab);
         if (foundTab) {
-          setCurrentTabName([foundTab.name]);
+          setCurrentTabName([foundTab.href]);
         }
       } else if (!searchTab) {
         // show the drawer if tabs is empty
@@ -152,10 +156,6 @@ export default function App() {
       .getBoundingClientRect().width;
 
     setTabsNameOverflow(tabsNameBlockWidth > tabHeadingWidth - 80);
-  };
-
-  const getCurrentTab = (): TheftDataEntry | null => {
-    return tabs().find((t) => t.name === currentTabName()[0]) ?? null;
   };
 
   createEffect(() => {
@@ -286,15 +286,19 @@ export default function App() {
           >
             <MenuRounded />
           </IconButton>
-          <div
-            id="tabHeading"
-            class={open() && !smallSize() ? "TabHeading Hide" : "TabHeading"}
-          >
-            <div class={tabsNameOverflow() ? "GuiTabs Overflow" : "GuiTabs"}>
-              <div id="tabsNameBlock">{getCurrentTab()?.name ?? "GuiTabs"}</div>
+          {currentTab && (
+            <div
+              id="tabHeading"
+              class={open() && !smallSize() ? "TabHeading Hide" : "TabHeading"}
+            >
+              <div class={tabsNameOverflow() ? "GuiTabs Overflow" : "GuiTabs"}>
+                <div id="tabsNameBlock">
+                  {(currentTab() as TheftDataEntry).name ?? "GuiTabs"}
+                </div>
+              </div>
+              {currentTab() && metaButton(currentTab() as TheftDataEntry)}
             </div>
-            {getCurrentTab() !== null && metaButton(getCurrentTab())}
-          </div>
+          )}
           {
             <Dialog
               open={stealDialogOpen()}
@@ -367,8 +371,8 @@ export default function App() {
         }}
       >
         <DrawerHeader />
-        {getCurrentTab() !== null ? (
-          mapTab(getCurrentTab())
+        {currentTabName() !== null ? (
+          <ContentViewer />
         ) : (
           <img
             src="index.png"
