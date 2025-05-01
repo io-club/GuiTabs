@@ -4,6 +4,7 @@ import solidPlugin from "vite-plugin-solid";
 import suidPlugin from "@suid/vite-plugin";
 
 export default defineConfig({
+  base: "./",
   plugins: [solid(), suidPlugin(), solidPlugin()],
   build: {
     target: "esnext",
