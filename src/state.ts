@@ -10,7 +10,7 @@ export const defaultApiUrlList = [
 // Create a persistent atom with initial value in localStorage
 export const apiUrlAtom = atomWithStorage(
   "apiUrl",
-  defaultApiUrlList,
+  defaultApiUrlList[0],
   localStorage,
   {
     getOnInit: true,
@@ -19,7 +19,7 @@ export const apiUrlAtom = atomWithStorage(
 
 export const apiStorageAtom = atomWithStorage(
   "apiStorage",
-  defaultApiUrlList,
+  JSON.stringify(defaultApiUrlList),
   localStorage,
   {
     getOnInit: true,

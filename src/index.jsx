@@ -1,11 +1,12 @@
-import { Router } from "@solidjs/router";
+import { Router, Route } from "@solidjs/router";
 import { render } from "solid-js/web";
 import App from "./pages/main";
+
 render(
   () => (
     <Router>
-      <App />
+      <Route path="/*" component={App} />
     </Router>
   ),
-  document.getElementById("root"),
+  document.getElementById("root")
 );
