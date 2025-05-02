@@ -117,6 +117,7 @@ export function APIManagerDialog(props: APIManagerDialogProps) {
         <Button
           onClick={() => {
             props.openHook[1](false);
+            location.reload();
           }}
         >
           好了
