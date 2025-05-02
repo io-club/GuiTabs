@@ -24,7 +24,7 @@ import {
   apiUrlAtom,
   currentTabAtom,
   currentTabNamesAtom,
-  defaultApiUrl,
+  defaultApiUrlList,
   tabsStoreAtom,
 } from "../../state";
 import MuiAppBar, {
@@ -74,12 +74,18 @@ export default function App() {
 
   const [addingAPI, setAddingAPI] = createSignal<string>("");
 
-  // init if null
-  if (typeof apiURL() !== "string") {
-    setAPIURL(defaultApiUrl);
+  let parsedAPIURLs = [] as string[];
+  try {
+    parsedAPIURLs = JSON.parse(api() ?? "[]") as string[];
+  } catch {
+    parsedAPIURLs = [];
   }
-  if (typeof api() !== "string") {
-    setAPI(JSON.stringify([apiURL()]));
+  if (parsedAPIURLs.length === 0) {
+    parsedAPIURLs = [...defaultApiUrlList];
+    setAPI(JSON.stringify(parsedAPIURLs));
+  }
+  if (!parsedAPIURLs.includes(apiURL())) {
+    setAPIURL(parsedAPIURLs[0]);
   }
 
   // get API URL from URL params
@@ -87,8 +93,6 @@ export default function App() {
     setAddingAPI(undefined);
     setApiDialogOpen(false);
   } else {
-    const parsedAPIURLs = JSON.parse(api() ?? "[]") as string[];
-
     if (!parsedAPIURLs.includes(searchURL)) {
       setAddingAPI(searchURL);
       setApiDialogOpen(true);

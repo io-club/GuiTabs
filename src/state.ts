@@ -2,12 +2,15 @@ import { atom } from "solid-jotai";
 import { TheftData, TheftDataEntry, TheftMeta } from "./types";
 import { atomWithStorage } from "jotai/vanilla/utils";
 
-export const defaultApiUrl = "https://c.rcex.live:37898";
+export const defaultApiUrlList = [
+  "https://thief.prox.work:8443",
+  "https://c.rcex.live:37898",
+];
 
 // Create a persistent atom with initial value in localStorage
 export const apiUrlAtom = atomWithStorage(
   "apiUrl",
-  defaultApiUrl,
+  defaultApiUrlList[0],
   localStorage,
   {
     getOnInit: true,
@@ -16,7 +19,7 @@ export const apiUrlAtom = atomWithStorage(
 
 export const apiStorageAtom = atomWithStorage(
   "apiStorage",
-  `["${defaultApiUrl}"]`,
+  JSON.stringify(defaultApiUrlList),
   localStorage,
   {
     getOnInit: true,
