@@ -43,6 +43,7 @@ import { useSearchParams } from "@solidjs/router";
 import { APIManagerDialog } from "./api";
 import ContentViewer from "./sheet";
 import { mapSheetString } from "../../tabs";
+import WasmModal from "./wasm-modal";
 
 export const drawerWidth = 240;
 export const smallSizeWidth = 800;
@@ -62,6 +63,7 @@ export default function App() {
     null,
   );
   const [stealDialogOpen, setStealDialogOpen] = createSignal(false);
+  const [wasmModalOpen, setWasmModalOpen] = createSignal(false);
   const [api, setAPI] = useAtom(apiStorageAtom);
   const [apiURL, setAPIURL] = useAtom(apiUrlAtom);
   const [apiURLChanged, setAPIURLChanged] = createSignal(false);
@@ -300,6 +302,10 @@ export default function App() {
               adding={addingAPI()}
             />
           }
+          <WasmModal
+            open={wasmModalOpen()}
+            onClose={() => setWasmModalOpen(false)}
+          />
           <div
             id="headingButtons"
             style={{ display: "flex", "flex-wrap": "nowrap" }}
@@ -323,6 +329,16 @@ export default function App() {
               }}
             >
               Steal
+            </Button>
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+                setWasmModalOpen(true);
+              }}
+            >
+              Listen
             </Button>
             <Button
               id="apiButton"

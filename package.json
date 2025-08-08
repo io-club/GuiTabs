@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@bjorn3/browser_wasi_shim": "^0.4.2",
     "@solidjs/router": "^0.8.3",
     "@suid/icons-material": "^0.6.11",
     "@suid/material": "^0.15.1",
